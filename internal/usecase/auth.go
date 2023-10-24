@@ -5,6 +5,7 @@ import (
 	"simbirGo/internal/database/models"
 	"simbirGo/internal/dto"
 	"simbirGo/internal/entities"
+	"simbirGo/internal/tokens"
 )
 
 type AuthRepository interface {
@@ -28,7 +29,7 @@ func (au AuthUsecase) SignUp(user entities.User) (string, error) {
 	userModel := dto.UserEntitieToModels(user)
 	userModel = au.r.CreateUser(userModel)
 	userEntite := dto.UserModelToEntitie(userModel)
-	token, err := GenerateNewJwt(userEntite)
+	token, err := tokens.GenerateNewJwt(userEntite)
 	if err != nil {
 		return "", err
 	}

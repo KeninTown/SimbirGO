@@ -13,6 +13,23 @@ import (
 	"syscall"
 )
 
+// @title           Simbir.Go REST API
+// @version         1.0
+// @description     Server for transport booking
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @host      localhost:80
+// @BasePath  /api/v1
+
+// @securityDefinitions.basic  BasicAuth
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
+
 func main() {
 	cfgPath := "./config/config.yml"
 	cfg, err := config.Init(cfgPath)

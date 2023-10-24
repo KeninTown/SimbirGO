@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"simbirGo/internal/entities"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +9,8 @@ import (
 type AuthUsecase interface {
 	SignUp(user entities.User) (string, error)
 }
+
+
 
 type AuthHandlers struct {
 	uc AuthUsecase
@@ -24,7 +25,12 @@ func (ah AuthHandlers) MyAccount(ctx *gin.Context) {
 }
 
 func (ah AuthHandlers) SignIn(ctx *gin.Context) {
-
+	var user entities.User
+	if err := ctx.BindJSON(&user); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	
 }
 
 func (ah AuthHandlers) SignUp(ctx *gin.Context) {
@@ -33,7 +39,6 @@ func (ah AuthHandlers) SignUp(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(user)
 	token, err := ah.uc.SignUp(user)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})

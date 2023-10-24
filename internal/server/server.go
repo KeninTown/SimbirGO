@@ -7,7 +7,11 @@ import (
 	"simbirGo/internal/server/handlers"
 	"time"
 
+	_ "simbirGo/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Usecase interface {
@@ -38,6 +42,8 @@ func (s *Server) Run(ctx context.Context, uc Usecase) {
 	// s.router.GET("/api/Account/Me", handlers.MyAccount(uc))
 	h := handlers.New(uc)
 	s.router.POST("/api/Account/SignUp", h.SignUp)
+
+	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	server := http.Server{
 		Addr:    s.addr,
