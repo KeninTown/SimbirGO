@@ -43,9 +43,15 @@ func Connect(cfg *config.Config) (Database, error) {
 	return Database{db: db}, nil
 }
 
-func (db Database) FindUser(username string) models.User {
+func (db Database) FindUserByUsername(username string) models.User {
 	var user models.User
 	db.db.Find(&user, "username=?", username)
+	return user
+}
+
+func (db Database) FindUserById(id uint) models.User {
+	var user models.User
+	db.db.Find(&user, "id=?", id)
 	return user
 }
 
@@ -58,4 +64,18 @@ func (db Database) FindTransportType(trType string) models.TransportType {
 func (db Database) CreateUser(user models.User) models.User {
 	db.db.Create(&user)
 	return user
+}
+
+func (db Database) SaveUser(user models.User) {
+	db.db.Save(&user)
+}
+
+func (db Database) GetUsers(start uint, count int) []models.User {
+	var users []models.User
+	db.db.Limit(int(count)).Find(&users, "id>=?", start)
+	return users
+}
+
+func (db Database) DeleteUser(id uint) {
+	db.db.Delete(&models.User{}, "id=?", id)
 }

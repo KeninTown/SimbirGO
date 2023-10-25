@@ -1,8 +1,9 @@
 package models
 
 type User struct {
-	Id       uint   `json:"id" gorm:"primaryKey"`
-	Username string `json:"username" gorm:"not null; unique" `
-	Password string `json:"password" gorm:"not null"`
+	Id       uint   `gorm:"primaryKey"`
+	Username string `gorm:"not null; unique" `
+	Password string `gorm:"not null"`
 	IsAdmin  bool   `gorm:"not null"`
+	Balance  float64
 }

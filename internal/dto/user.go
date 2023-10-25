@@ -11,6 +11,7 @@ func UserEntitieToModels(user entities.User) models.User {
 		Username: user.Username,
 		Password: user.Password,
 		IsAdmin:  user.IsAdmin,
+		Balance:  user.Balance,
 	}
 }
 
@@ -20,5 +21,6 @@ func UserModelToEntitie(user models.User) entities.User {
 		Username: user.Username,
 		Password: user.Password,
 		IsAdmin:  user.IsAdmin,
+		Balance:  user.Balance,
 	}
 }

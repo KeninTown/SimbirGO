@@ -4,7 +4,8 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"simbirGo/internal/server/handlers"
+	auth "simbirGo/internal/server/handlers/authHandler"
+	middleware "simbirGo/internal/server/middlewares"
 	"time"
 
 	_ "simbirGo/docs"
@@ -15,7 +16,7 @@ import (
 )
 
 type Usecase interface {
-	handlers.AuthUsecase
+	auth.AuthUsecase
 }
 
 type Server struct {
@@ -40,10 +41,25 @@ func (s *Server) Run(ctx context.Context, uc Usecase) {
 	})
 
 	// s.router.GET("/api/Account/Me", handlers.MyAccount(uc))
-	h := handlers.New(uc)
-	s.router.POST("/api/Account/SignUp", h.SignUp)
+	ah := auth.New(uc)
+
+	//auth routes
+	gr := s.router.Group("/", middleware.CheckAuthification())
+	gr.GET("/api/Account/Me", ah.MyAccount)
+	s.router.POST("/api/Account/SignIn", ah.SignIn)
+	s.router.POST("/api/Account/SignUp", ah.SignUp)
+	gr.POST("/api/Account/SignOut", ah.SignOut)
+	gr.PUT("/api/Account/Update", ah.Update)
 
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	//admin auth routes
+	adminAuthRouts := s.router.Group("/api/Admin/Account", middleware.CheckAuthification(), middleware.CheckAdminStatus())
+	adminAuthRouts.GET("/", ah.GetUsers)
+	adminAuthRouts.GET("/:id", ah.GetUser)
+	adminAuthRouts.POST("/", ah.CreateUser)
+	adminAuthRouts.PUT("/:id", ah.UpdateUser)
+	adminAuthRouts.DELETE("/:id", ah.DeleteUser)
 
 	server := http.Server{
 		Addr:    s.addr,
