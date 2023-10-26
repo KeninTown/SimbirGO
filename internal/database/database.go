@@ -43,6 +43,7 @@ func Connect(cfg *config.Config) (Database, error) {
 	return Database{db: db}, nil
 }
 
+// auth repository
 func (db Database) FindUserByUsername(username string) models.User {
 	var user models.User
 	db.db.Find(&user, "username=?", username)
@@ -53,12 +54,6 @@ func (db Database) FindUserById(id uint) models.User {
 	var user models.User
 	db.db.Find(&user, "id=?", id)
 	return user
-}
-
-func (db Database) FindTransportType(trType string) models.TransportType {
-	var tType models.TransportType
-	db.db.Find(&tType, "type=?", trType)
-	return tType
 }
 
 func (db Database) CreateUser(user models.User) models.User {
@@ -78,4 +73,42 @@ func (db Database) GetUsers(start uint, count int) []models.User {
 
 func (db Database) DeleteUser(id uint) {
 	db.db.Delete(&models.User{}, "id=?", id)
+}
+
+// transport repository
+func (db Database) FindTypeById(id uint) string {
+	var trType models.TransportType
+	db.db.Find(&trType, "id=?", id)
+	return trType.Type
+}
+
+func (db Database) FindTypeByName(typeName string) uint {
+	var trType models.TransportType
+	db.db.Find(&trType, "type=?", typeName)
+	return trType.Id
+}
+
+func (db Database) FindTranspot(id uint) models.Transport {
+	var transport models.Transport
+	db.db.Find(&transport, "id=?", id)
+	return transport
+}
+
+func (db Database) CreateTransport(transport models.Transport) models.Transport {
+	db.db.Create(&transport)
+	return transport
+}
+
+func (db Database) FindUserTransport(userId, transportId uint) models.Transport {
+	var transport models.Transport
+	db.db.Where("id = ? AND owner_id = ?", transportId, userId).Find(&transport)
+	return transport
+}
+
+func (db Database) SaveTransport(transport models.Transport) {
+	db.db.Save(&transport)
+}
+
+func (db Database) DeleteUserTransport(ownerId, transportId uint) {
+	db.db.Where("owner_id = ? AND id = ?", ownerId, transportId).Delete(&models.Transport{})
 }

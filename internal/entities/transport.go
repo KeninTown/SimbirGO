@@ -4,7 +4,7 @@ type Transport struct {
 	Id            uint    `json:"id" gorm:"primaryKey"`
 	OwnerId       uint    `json:"owner_id"`
 	TransportType string  `json:"transportType"`
-	CanBeRanted   bool    `json:"canBeRented"`
+	CanBeRented   bool    `json:"canBeRented"`
 	Model         string  `json:"model"`
 	Color         string  `json:"color"`
 	Identifier    string  `json:"identifier"`

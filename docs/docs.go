@@ -11,15 +11,574 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+            "name": "Alexander Soldatov",
+            "email": "soldatovalex207z@gmail.com"
         },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {},
+    "paths": {
+        "/api/Account/Me": {
+            "get": {
+                "description": "Просмотр информации о текущем авторизованном аккаунте",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "Просмотр данных текущего аккаунта",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Account/SignIn": {
+            "post": {
+                "description": "Вход в аккаунт и установление в cookie jwt токена авторизации",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "Вход в аккаунт",
+                "parameters": [
+                    {
+                        "description": "User credentials",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authHandler.SignIn.userCreadentials"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Account/SignOut": {
+            "post": {
+                "description": "Удаление jwt токена из cookie access_token",
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "Выход из аккаунта",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Account/SignUp": {
+            "post": {
+                "description": "Регистрация и установление jwt токена в cookie access_token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "Регистрация",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authHandler.SignUp.userData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Account/Update": {
+            "put": {
+                "description": "Проверка входящих данных и обновление данных аккаунта",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authorization"
+                ],
+                "summary": "Обновление данных аккаунта",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authHandler.Update.userData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Admin/Account": {
+            "get": {
+                "description": "Получение данных count пользователей начиная с id = start",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Authorization"
+                ],
+                "summary": "Получение данных пользователей",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "start",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "count",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Создание нового пользователя с указанными данными",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Authorization"
+                ],
+                "summary": "Создание нового пользователя",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authHandler.CreateUser.userData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Admin/Account/{id}": {
+            "get": {
+                "description": "Получение пользователя с id = {id}",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Authorization"
+                ],
+                "summary": "Получение пользователя",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Обновление данных пользователя с id={id}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Authorization"
+                ],
+                "summary": "Обновление данных пользователя",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User data",
+                        "name": "requset",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authHandler.UpdateUser.userData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Обновление данных пользователя с id={id}",
+                "tags": [
+                    "Admin Authorization"
+                ],
+                "summary": "Обновление данных пользователя",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "authHandler.CreateUser.userData": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "balance": {
+                    "type": "number"
+                },
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "authHandler.SignIn.userCreadentials": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "authHandler.SignUp.userData": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "authHandler.Update.userData": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "balance": {
+                    "type": "number"
+                },
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "authHandler.UpdateUser.userData": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "balance": {
+                    "type": "number"
+                },
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.User": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "balance": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "httpUtil.ResponseError": {
+            "type": "object",
+            "properties": {
+                "err": {
+                    "type": "string",
+                    "example": "erorr occurs"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "BasicAuth": {
             "type": "basic"
@@ -35,7 +594,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:80",
-	BasePath:         "/api/v1",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Simbir.Go REST API",
 	Description:      "Server for transport booking",

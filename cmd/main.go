@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"simbirGo/internal/config"
 	"simbirGo/internal/database"
 	"simbirGo/internal/server"
-	"simbirGo/internal/usecase"
+	"simbirGo/internal/usecase/authUsecase"
+	transportusecase "simbirGo/internal/usecase/transportUsecase"
 	"syscall"
 )
 
@@ -18,12 +18,11 @@ import (
 // @description     Server for transport booking
 // @termsOfService  http://swagger.io/terms/
 
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
+// @contact.name   Alexander Soldatov
+// @contact.email  soldatovalex207z@gmail.com
 
 // @host      localhost:80
-// @BasePath  /api/v1
+// @BasePath  /
 
 // @securityDefinitions.basic  BasicAuth
 
@@ -42,11 +41,13 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	log.Print("succesfully connect to database")
-	fmt.Println(db)
-	uc := usecase.New(db)
+
+	authUc := authUsecase.New(db)
+	transportUc := transportusecase.New(db)
+
 	srv := server.New(":80")
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
 	defer stop()
 
-	srv.Run(ctx, uc)
+	srv.Run(ctx, authUc, transportUc)
 }

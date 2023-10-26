@@ -1,18 +1,386 @@
-basePath: /api/v1
+basePath: /
+definitions:
+  authHandler.CreateUser.userData:
+    properties:
+      balance:
+        type: number
+      isAdmin:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  authHandler.SignIn.userCreadentials:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  authHandler.SignUp.userData:
+    properties:
+      isAdmin:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  authHandler.Update.userData:
+    properties:
+      balance:
+        type: number
+      isAdmin:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  authHandler.UpdateUser.userData:
+    properties:
+      balance:
+        type: number
+      isAdmin:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  entities.User:
+    properties:
+      balance:
+        type: number
+      id:
+        type: integer
+      isAdmin:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  httpUtil.ResponseError:
+    properties:
+      err:
+        example: erorr occurs
+        type: string
+    type: object
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
 host: localhost:80
 info:
   contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
+    email: soldatovalex207z@gmail.com
+    name: Alexander Soldatov
   description: Server for transport booking
   termsOfService: http://swagger.io/terms/
   title: Simbir.Go REST API
   version: "1.0"
-paths: {}
+paths:
+  /api/Account/Me:
+    get:
+      description: Просмотр информации о текущем авторизованном аккаунте
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Просмотр данных текущего аккаунта
+      tags:
+      - Authorization
+  /api/Account/SignIn:
+    post:
+      consumes:
+      - application/json
+      description: Вход в аккаунт и установление в cookie jwt токена авторизации
+      parameters:
+      - description: User credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authHandler.SignIn.userCreadentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Вход в аккаунт
+      tags:
+      - Authorization
+  /api/Account/SignOut:
+    post:
+      description: Удаление jwt токена из cookie access_token
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Выход из аккаунта
+      tags:
+      - Authorization
+  /api/Account/SignUp:
+    post:
+      consumes:
+      - application/json
+      description: Регистрация и установление jwt токена в cookie access_token
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authHandler.SignUp.userData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Регистрация
+      tags:
+      - Authorization
+  /api/Account/Update:
+    put:
+      consumes:
+      - application/json
+      description: Проверка входящих данных и обновление данных аккаунта
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authHandler.Update.userData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Обновление данных аккаунта
+      tags:
+      - Authorization
+  /api/Admin/Account:
+    get:
+      description: Получение данных count пользователей начиная с id = start
+      parameters:
+      - description: start
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: count
+        in: query
+        name: count
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Получение данных пользователей
+      tags:
+      - Admin Authorization
+    post:
+      consumes:
+      - application/json
+      description: Создание нового пользователя с указанными данными
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authHandler.CreateUser.userData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Создание нового пользователя
+      tags:
+      - Admin Authorization
+  /api/Admin/Account/{id}:
+    delete:
+      description: Обновление данных пользователя с id={id}
+      parameters:
+      - description: Account id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Обновление данных пользователя
+      tags:
+      - Admin Authorization
+    get:
+      description: Получение пользователя с id = {id}
+      parameters:
+      - description: Account id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Получение пользователя
+      tags:
+      - Admin Authorization
+    put:
+      consumes:
+      - application/json
+      description: Обновление данных пользователя с id={id}
+      parameters:
+      - description: Account id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User data
+        in: body
+        name: requset
+        required: true
+        schema:
+          $ref: '#/definitions/authHandler.UpdateUser.userData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Обновление данных пользователя
+      tags:
+      - Admin Authorization
 securityDefinitions:
   BasicAuth:
     type: basic

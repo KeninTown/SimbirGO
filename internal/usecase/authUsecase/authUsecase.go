@@ -1,4 +1,4 @@
-package usecase
+package authUsecase
 
 import (
 	"fmt"
@@ -51,10 +51,10 @@ func (au AuthUsecase) SignIn(user entities.User) (string, error) {
 	return token, nil
 }
 
-func (au AuthUsecase) SignUp(user entities.User) (string, error) {
+func (au AuthUsecase) SignUp(user entities.User) (entities.User, string, error) {
 	candidate := au.r.FindUserByUsername(user.Username)
 	if candidate.Id != 0 {
-		return "", fmt.Errorf("user is already exist")
+		return entities.User{}, "", fmt.Errorf("user is already exist")
 	}
 
 	userModel := dto.UserEntitieToModels(user)
@@ -62,9 +62,9 @@ func (au AuthUsecase) SignUp(user entities.User) (string, error) {
 	userEntite := dto.UserModelToEntitie(userModel)
 	token, err := tokens.GenerateNewJwt(userEntite)
 	if err != nil {
-		return "", err
+		return entities.User{}, "", err
 	}
-	return token, nil
+	return userEntite, token, nil
 }
 
 func (au AuthUsecase) Update(user entities.User) (entities.User, error) {
