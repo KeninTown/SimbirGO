@@ -15,6 +15,9 @@ type TransportRepository interface {
 	FindUserTransport(userId, transportId uint) models.Transport
 	SaveTransport(transport models.Transport)
 	DeleteUserTransport(ownerId, transportId uint)
+	FindUserById(id uint) models.User
+	FindTranspots(start, count int, transportId uint) []models.Transport
+	DeleteTransport(id uint)
 }
 
 type TransportUsecase struct {
@@ -58,6 +61,7 @@ func (tu TransportUsecase) UpdateUserTransport(transport entities.Transport) (en
 		return entities.Transport{}, fmt.Errorf("invalid transport type")
 	}
 
+	transportModel.OwnerId = transport.OwnerId
 	transportModel.TypeId = typeId
 	transportModel.CanBeRented = transport.CanBeRented
 	transportModel.Model = transport.Model
@@ -81,4 +85,41 @@ func (tu TransportUsecase) DeleteUserTransport(userId, transportId uint) error {
 	}
 	tu.r.DeleteUserTransport(userId, transportId)
 	return nil
+}
+
+func (tu TransportUsecase) GetTransports(start, count int, transportType string) ([]entities.Transport, error) {
+	transportTypeId := tu.r.FindTypeByName(transportType)
+	if transportTypeId == 0 {
+		return nil, fmt.Errorf("invalid transport type: %s", transportType)
+	}
+	transportModels := tu.r.FindTranspots(start, count, transportTypeId)
+	transportEntites := make([]entities.Transport, 0, len(transportModels))
+	for _, tr := range transportModels {
+		transportEntites = append(transportEntites, dto.TransportModelToEntite(tr, transportType))
+	}
+
+	return transportEntites, nil
+}
+
+func (tu TransportUsecase) AdminCreateTransport(transport entities.Transport) (entities.Transport, error) {
+	//find user with ownerId
+	owner := tu.r.FindUserById(transport.OwnerId)
+	if owner.Id == 0 {
+		return entities.Transport{}, fmt.Errorf("user with id = %d is not exist", transport.OwnerId)
+	}
+	//create
+	return tu.CreateTransport(transport)
+}
+
+func (tu TransportUsecase) AdminUpdateTransport(transport entities.Transport) (entities.Transport, error) {
+	owner := tu.r.FindUserById(transport.OwnerId)
+	if owner.Id == 0 {
+		return entities.Transport{}, fmt.Errorf("user with id = %d is not exist", transport.OwnerId)
+	}
+
+	return tu.UpdateUserTransport(transport)
+}
+
+func (tu TransportUsecase) AdminDeleteTransport(id uint) {
+	tu.r.DeleteTransport(id)
 }

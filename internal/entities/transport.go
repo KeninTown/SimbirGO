@@ -2,7 +2,7 @@ package entities
 
 type Transport struct {
 	Id            uint    `json:"id" gorm:"primaryKey"`
-	OwnerId       uint    `json:"owner_id"`
+	OwnerId       uint    `json:"ownerId"`
 	TransportType string  `json:"transportType"`
 	CanBeRented   bool    `json:"canBeRented"`
 	Model         string  `json:"model"`

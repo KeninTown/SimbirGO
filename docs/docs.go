@@ -21,12 +21,17 @@ const docTemplate = `{
     "paths": {
         "/api/Account/Me": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Просмотр информации о текущем авторизованном аккаунте",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Authorization"
+                    "AccountController"
                 ],
                 "summary": "Просмотр данных текущего аккаунта",
                 "responses": {
@@ -61,7 +66,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Authorization"
+                    "AccountController"
                 ],
                 "summary": "Вход в аккаунт",
                 "parameters": [
@@ -76,8 +81,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK"
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -90,9 +98,14 @@ const docTemplate = `{
         },
         "/api/Account/SignOut": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Удаление jwt токена из cookie access_token",
                 "tags": [
-                    "Authorization"
+                    "AccountController"
                 ],
                 "summary": "Выход из аккаунта",
                 "responses": {
@@ -118,7 +131,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Authorization"
+                    "AccountController"
                 ],
                 "summary": "Регистрация",
                 "parameters": [
@@ -150,6 +163,11 @@ const docTemplate = `{
         },
         "/api/Account/Update": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Проверка входящих данных и обновление данных аккаунта",
                 "consumes": [
                     "application/json"
@@ -158,7 +176,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Authorization"
+                    "AccountController"
                 ],
                 "summary": "Обновление данных аккаунта",
                 "parameters": [
@@ -196,12 +214,17 @@ const docTemplate = `{
         },
         "/api/Admin/Account": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Получение данных count пользователей начиная с id = start",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Admin Authorization"
+                    "AdminAccountController"
                 ],
                 "summary": "Получение данных пользователей",
                 "parameters": [
@@ -251,6 +274,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Создание нового пользователя с указанными данными",
                 "consumes": [
                     "application/json"
@@ -259,7 +287,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin Authorization"
+                    "AdminAccountController"
                 ],
                 "summary": "Создание нового пользователя",
                 "parameters": [
@@ -303,12 +331,17 @@ const docTemplate = `{
         },
         "/api/Admin/Account/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Получение пользователя с id = {id}",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Admin Authorization"
+                    "AdminAccountController"
                 ],
                 "summary": "Получение пользователя",
                 "parameters": [
@@ -348,6 +381,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Обновление данных пользователя с id={id}",
                 "consumes": [
                     "application/json"
@@ -356,7 +394,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin Authorization"
+                    "AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -405,9 +443,14 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Обновление данных пользователя с id={id}",
                 "tags": [
-                    "Admin Authorization"
+                    "AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -440,6 +483,514 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Admin/Transport": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение count транспортных средств с id \u003e= start с типом транспорта transportType",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminTransportController"
+                ],
+                "summary": "Информация о транспортных средствах",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "start",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "count",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "transportType",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Transport"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Создание транспортного средства указывая пользователя с id = ownerId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminTransportController"
+                ],
+                "summary": "Создание транспортного средства",
+                "parameters": [
+                    {
+                        "description": "Transport data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transportHandler.AdminCreateTransport.transportData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Transport"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Admin/Transport/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение информации о транспортном средстве с id = {id}",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminTransportController"
+                ],
+                "summary": "Информация о транспортном средстве",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Transport"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновление транспортного средства с id = {id}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminTransportController"
+                ],
+                "summary": "Обновление транспортного средства",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Transport data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transportHandler.AdminUpdateTransport.transportData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Transport"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Удаление транспортного средства с id = {id}",
+                "tags": [
+                    "AdminTransportController"
+                ],
+                "summary": "Удаление транспортного средства",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Payment/Hesoyam/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Добавляет на баланс пользователся с id = {id} 250 000. Администраторы могут изменять баланс любому пользователю, обычные пользователи только себе",
+                "tags": [
+                    "PaymentController"
+                ],
+                "summary": "Пополнение баланса",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Transport": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Создает транспорт у текущего авторизованного пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TransportController"
+                ],
+                "summary": "Создаение транспорта",
+                "parameters": [
+                    {
+                        "description": "Transport data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transportHandler.CreateTransport.transportData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/transportHandler.CreateTransport.responseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Transport/{id}": {
+            "get": {
+                "description": "Просмотр информации о транспорте с id = {id}",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TransportController"
+                ],
+                "summary": "Получение информации о транспотре",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/transportHandler.GetTransport.transportData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновление информации о транспорте с id = {id}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TransportController"
+                ],
+                "summary": "Обновление информации о транспотре",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Transport data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transportHandler.UpdateTransport.transportData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/transportHandler.UpdateTransport.responseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Удаление транспорта с id = {id} если данные транспорт принадлежит текущему авторизованному пользователю",
+                "tags": [
+                    "TransportController"
+                ],
+                "summary": "Удаление транспорта",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/httpUtil.ResponseError"
                         }
@@ -506,6 +1057,8 @@ const docTemplate = `{
         "authHandler.Update.userData": {
             "type": "object",
             "required": [
+                "balance",
+                "isAdmin",
                 "password",
                 "username"
             ],
@@ -545,6 +1098,47 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.Transport": {
+            "type": "object",
+            "properties": {
+                "canBeRented": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "dayPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "minutePrice": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "ownerId": {
+                    "type": "integer"
+                },
+                "transportType": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.User": {
             "type": "object",
             "required": [
@@ -574,19 +1168,332 @@ const docTemplate = `{
             "properties": {
                 "err": {
                     "type": "string",
-                    "example": "erorr occurs"
+                    "example": "error occures"
+                }
+            }
+        },
+        "transportHandler.AdminCreateTransport.transportData": {
+            "type": "object",
+            "required": [
+                "color",
+                "identifier",
+                "latitude",
+                "longitude",
+                "model",
+                "ownerId",
+                "transportType"
+            ],
+            "properties": {
+                "canBeRented": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "dayPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "minutePrice": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "ownerId": {
+                    "type": "integer"
+                },
+                "transportType": {
+                    "type": "string"
+                }
+            }
+        },
+        "transportHandler.AdminUpdateTransport.transportData": {
+            "type": "object",
+            "required": [
+                "color",
+                "identifier",
+                "latitude",
+                "longitude",
+                "model",
+                "ownerId",
+                "transportType"
+            ],
+            "properties": {
+                "canBeRented": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "dayPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "minutePrice": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "ownerId": {
+                    "type": "integer"
+                },
+                "transportType": {
+                    "type": "string"
+                }
+            }
+        },
+        "transportHandler.CreateTransport.responseData": {
+            "type": "object",
+            "required": [
+                "color",
+                "identifier",
+                "latitude",
+                "longitude",
+                "model",
+                "transportType"
+            ],
+            "properties": {
+                "canBeRented": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "dayPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "minutePrice": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "transportType": {
+                    "type": "string"
+                }
+            }
+        },
+        "transportHandler.CreateTransport.transportData": {
+            "type": "object",
+            "required": [
+                "color",
+                "identifier",
+                "latitude",
+                "longitude",
+                "model",
+                "transportType"
+            ],
+            "properties": {
+                "canBeRented": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "dayPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "minutePrice": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "transportType": {
+                    "type": "string"
+                }
+            }
+        },
+        "transportHandler.GetTransport.transportData": {
+            "type": "object",
+            "required": [
+                "color",
+                "identifier",
+                "latitude",
+                "longitude",
+                "model",
+                "transportType"
+            ],
+            "properties": {
+                "canBeRented": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "dayPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "minutePrice": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "transportType": {
+                    "type": "string"
+                }
+            }
+        },
+        "transportHandler.UpdateTransport.responseData": {
+            "type": "object",
+            "required": [
+                "color",
+                "identifier",
+                "latitude",
+                "longitude",
+                "model",
+                "transportType"
+            ],
+            "properties": {
+                "canBeRented": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "dayPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "minutePrice": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "transportType": {
+                    "type": "string"
+                }
+            }
+        },
+        "transportHandler.UpdateTransport.transportData": {
+            "type": "object",
+            "required": [
+                "color",
+                "identifier",
+                "latitude",
+                "longitude",
+                "model",
+                "transportType"
+            ],
+            "properties": {
+                "canBeRented": {
+                    "type": "boolean"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "dayPrice": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "minutePrice": {
+                    "type": "number"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "transportType": {
+                    "type": "string"
                 }
             }
         }
     },
     "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
-    },
-    "externalDocs": {
-        "description": "OpenAPI",
-        "url": "https://swagger.io/resources/open-api/"
     }
 }`
 
@@ -596,7 +1503,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:80",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Simbir.Go REST API",
+	Title:            "SimbirGO REST API",
 	Description:      "Server for transport booking",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

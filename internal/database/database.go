@@ -112,3 +112,13 @@ func (db Database) SaveTransport(transport models.Transport) {
 func (db Database) DeleteUserTransport(ownerId, transportId uint) {
 	db.db.Where("owner_id = ? AND id = ?", ownerId, transportId).Delete(&models.Transport{})
 }
+
+func (db Database) FindTranspots(start, count int, transportId uint) []models.Transport {
+	var transports []models.Transport
+	db.db.Where("id >= ? AND type_id = ?", start, transportId).Limit(int(count)).Find(&transports)
+	return transports
+}
+
+func (db Database) DeleteTransport(id uint) {
+	db.db.Delete(&models.Transport{}, "id=?", id)
+}

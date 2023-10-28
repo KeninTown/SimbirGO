@@ -3,18 +3,27 @@ package middlewares
 import (
 	"fmt"
 	"net/http"
+	httpUtil "simbirGo/internal/httputil"
 	"simbirGo/internal/tokens"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CheckAuthification() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		token, err := ctx.Cookie("access_token")
-		if err != nil || token == "" {
-			ctx.AbortWithStatusJSON(401, gin.H{"err": "access_token cookie must be provided"})
+		authHeader := ctx.GetHeader("Authorization")
+		authHeaderArray := strings.Split(authHeader, " ")
+		fmt.Println("header = ", authHeader)
+		if len(authHeaderArray) != 2 {
+			httpUtil.NewResponseError(ctx, 401, fmt.Errorf("invalid authorization header"))
 			return
 		}
+		if authHeaderArray[1] == "" {
+			httpUtil.NewResponseError(ctx, 401, fmt.Errorf("invalid jwt token"))
+		}
+		token := authHeaderArray[1]
+
 		tokenData, err := tokens.ParseToken(token)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"err": err.Error()})

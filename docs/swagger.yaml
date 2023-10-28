@@ -47,6 +47,8 @@ definitions:
       username:
         type: string
     required:
+    - balance
+    - isAdmin
     - password
     - username
     type: object
@@ -63,6 +65,33 @@ definitions:
     required:
     - password
     - username
+    type: object
+  entities.Transport:
+    properties:
+      canBeRented:
+        type: boolean
+      color:
+        type: string
+      dayPrice:
+        type: number
+      description:
+        type: string
+      id:
+        type: integer
+      identifier:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      minutePrice:
+        type: number
+      model:
+        type: string
+      ownerId:
+        type: integer
+      transportType:
+        type: string
     type: object
   entities.User:
     properties:
@@ -83,12 +112,229 @@ definitions:
   httpUtil.ResponseError:
     properties:
       err:
-        example: erorr occurs
+        example: error occures
         type: string
     type: object
-externalDocs:
-  description: OpenAPI
-  url: https://swagger.io/resources/open-api/
+  transportHandler.AdminCreateTransport.transportData:
+    properties:
+      canBeRented:
+        type: boolean
+      color:
+        type: string
+      dayPrice:
+        type: number
+      description:
+        type: string
+      identifier:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      minutePrice:
+        type: number
+      model:
+        type: string
+      ownerId:
+        type: integer
+      transportType:
+        type: string
+    required:
+    - color
+    - identifier
+    - latitude
+    - longitude
+    - model
+    - ownerId
+    - transportType
+    type: object
+  transportHandler.AdminUpdateTransport.transportData:
+    properties:
+      canBeRented:
+        type: boolean
+      color:
+        type: string
+      dayPrice:
+        type: number
+      description:
+        type: string
+      identifier:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      minutePrice:
+        type: number
+      model:
+        type: string
+      ownerId:
+        type: integer
+      transportType:
+        type: string
+    required:
+    - color
+    - identifier
+    - latitude
+    - longitude
+    - model
+    - ownerId
+    - transportType
+    type: object
+  transportHandler.CreateTransport.responseData:
+    properties:
+      canBeRented:
+        type: boolean
+      color:
+        type: string
+      dayPrice:
+        type: number
+      description:
+        type: string
+      id:
+        type: integer
+      identifier:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      minutePrice:
+        type: number
+      model:
+        type: string
+      transportType:
+        type: string
+    required:
+    - color
+    - identifier
+    - latitude
+    - longitude
+    - model
+    - transportType
+    type: object
+  transportHandler.CreateTransport.transportData:
+    properties:
+      canBeRented:
+        type: boolean
+      color:
+        type: string
+      dayPrice:
+        type: number
+      description:
+        type: string
+      identifier:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      minutePrice:
+        type: number
+      model:
+        type: string
+      transportType:
+        type: string
+    required:
+    - color
+    - identifier
+    - latitude
+    - longitude
+    - model
+    - transportType
+    type: object
+  transportHandler.GetTransport.transportData:
+    properties:
+      canBeRented:
+        type: boolean
+      color:
+        type: string
+      dayPrice:
+        type: number
+      description:
+        type: string
+      identifier:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      minutePrice:
+        type: number
+      model:
+        type: string
+      transportType:
+        type: string
+    required:
+    - color
+    - identifier
+    - latitude
+    - longitude
+    - model
+    - transportType
+    type: object
+  transportHandler.UpdateTransport.responseData:
+    properties:
+      canBeRented:
+        type: boolean
+      color:
+        type: string
+      dayPrice:
+        type: number
+      description:
+        type: string
+      id:
+        type: integer
+      identifier:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      minutePrice:
+        type: number
+      model:
+        type: string
+      transportType:
+        type: string
+    required:
+    - color
+    - identifier
+    - latitude
+    - longitude
+    - model
+    - transportType
+    type: object
+  transportHandler.UpdateTransport.transportData:
+    properties:
+      canBeRented:
+        type: boolean
+      color:
+        type: string
+      dayPrice:
+        type: number
+      description:
+        type: string
+      identifier:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      minutePrice:
+        type: number
+      model:
+        type: string
+      transportType:
+        type: string
+    required:
+    - color
+    - identifier
+    - latitude
+    - longitude
+    - model
+    - transportType
+    type: object
 host: localhost:80
 info:
   contact:
@@ -96,7 +342,7 @@ info:
     name: Alexander Soldatov
   description: Server for transport booking
   termsOfService: http://swagger.io/terms/
-  title: Simbir.Go REST API
+  title: SimbirGO REST API
   version: "1.0"
 paths:
   /api/Account/Me:
@@ -117,9 +363,11 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Просмотр данных текущего аккаунта
       tags:
-      - Authorization
+      - AccountController
   /api/Account/SignIn:
     post:
       consumes:
@@ -135,15 +383,17 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
+          schema:
+            type: string
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
       summary: Вход в аккаунт
       tags:
-      - Authorization
+      - AccountController
   /api/Account/SignOut:
     post:
       description: Удаление jwt токена из cookie access_token
@@ -154,9 +404,11 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Выход из аккаунта
       tags:
-      - Authorization
+      - AccountController
   /api/Account/SignUp:
     post:
       consumes:
@@ -182,7 +434,7 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       summary: Регистрация
       tags:
-      - Authorization
+      - AccountController
   /api/Account/Update:
     put:
       consumes:
@@ -210,9 +462,11 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Обновление данных аккаунта
       tags:
-      - Authorization
+      - AccountController
   /api/Admin/Account:
     get:
       description: Получение данных count пользователей начиная с id = start
@@ -248,9 +502,11 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Получение данных пользователей
       tags:
-      - Admin Authorization
+      - AdminAccountController
     post:
       consumes:
       - application/json
@@ -281,9 +537,11 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Создание нового пользователя
       tags:
-      - Admin Authorization
+      - AdminAccountController
   /api/Admin/Account/{id}:
     delete:
       description: Обновление данных пользователя с id={id}
@@ -310,9 +568,11 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - Admin Authorization
+      - AdminAccountController
     get:
       description: Получение пользователя с id = {id}
       parameters:
@@ -340,9 +600,11 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Получение пользователя
       tags:
-      - Admin Authorization
+      - AdminAccountController
     put:
       consumes:
       - application/json
@@ -378,10 +640,342 @@ paths:
           description: Forbidden
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - Admin Authorization
+      - AdminAccountController
+  /api/Admin/Transport:
+    get:
+      description: Получение count транспортных средств с id >= start с типом транспорта
+        transportType
+      parameters:
+      - description: start
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: count
+        in: query
+        name: count
+        required: true
+        type: integer
+      - description: transportType
+        in: query
+        name: count
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Transport'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Информация о транспортных средствах
+      tags:
+      - AdminTransportController
+    post:
+      consumes:
+      - application/json
+      description: Создание транспортного средства указывая пользователя с id = ownerId
+      parameters:
+      - description: Transport data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/transportHandler.AdminCreateTransport.transportData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Transport'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Создание транспортного средства
+      tags:
+      - AdminTransportController
+  /api/Admin/Transport/{id}:
+    delete:
+      description: Удаление транспортного средства с id = {id}
+      parameters:
+      - description: Transport id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Удаление транспортного средства
+      tags:
+      - AdminTransportController
+    get:
+      description: Получение информации о транспортном средстве с id = {id}
+      parameters:
+      - description: Transport id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Transport'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Информация о транспортном средстве
+      tags:
+      - AdminTransportController
+    put:
+      consumes:
+      - application/json
+      description: Обновление транспортного средства с id = {id}
+      parameters:
+      - description: Transport id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Transport data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/transportHandler.AdminUpdateTransport.transportData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Transport'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Обновление транспортного средства
+      tags:
+      - AdminTransportController
+  /api/Payment/Hesoyam/{id}:
+    post:
+      description: Добавляет на баланс пользователся с id = {id} 250 000. Администраторы
+        могут изменять баланс любому пользователю, обычные пользователи только себе
+      parameters:
+      - description: Account id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Пополнение баланса
+      tags:
+      - PaymentController
+  /api/Transport:
+    post:
+      consumes:
+      - application/json
+      description: Создает транспорт у текущего авторизованного пользователя
+      parameters:
+      - description: Transport data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/transportHandler.CreateTransport.transportData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/transportHandler.CreateTransport.responseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Создаение транспорта
+      tags:
+      - TransportController
+  /api/Transport/{id}:
+    delete:
+      description: Удаление транспорта с id = {id} если данные транспорт принадлежит
+        текущему авторизованному пользователю
+      parameters:
+      - description: Transport id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Удаление транспорта
+      tags:
+      - TransportController
+    get:
+      description: Просмотр информации о транспорте с id = {id}
+      parameters:
+      - description: Transport id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/transportHandler.GetTransport.transportData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Получение информации о транспотре
+      tags:
+      - TransportController
+    put:
+      consumes:
+      - application/json
+      description: Обновление информации о транспорте с id = {id}
+      parameters:
+      - description: Transport id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Transport data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/transportHandler.UpdateTransport.transportData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/transportHandler.UpdateTransport.responseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Обновление информации о транспотре
+      tags:
+      - TransportController
 securityDefinitions:
-  BasicAuth:
-    type: basic
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

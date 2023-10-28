@@ -31,9 +31,10 @@ func New(uc AuthUsecase) AuthHandlers {
 }
 
 // @Summary Просмотр данных текущего аккаунта
-// @Tags Authorization
+// @Tags AccountController
 // @Description Просмотр информации о текущем авторизованном аккаунте
 // @Produce  json
+// @Security ApiKeyAuth
 // @Success 200 {object} entities.User
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
@@ -49,12 +50,12 @@ func (ah AuthHandlers) MyAccount(ctx *gin.Context) {
 }
 
 // @Summary Вход в аккаунт
-// @Tags Authorization
+// @Tags AccountController
 // @Description Вход в аккаунт и установление в cookie jwt токена авторизации
 // @Accept json
 // @Produce  json
 // @Param request body authHandler.SignIn.userCreadentials true "User credentials"
-// @Success 200
+// @Success 201 {object} string
 // @Failure 400 {object} httpUtil.ResponseError
 // @Router /api/Account/SignIn [post]
 func (ah AuthHandlers) SignIn(ctx *gin.Context) {
@@ -75,11 +76,11 @@ func (ah AuthHandlers) SignIn(ctx *gin.Context) {
 		return
 	}
 	ctx.SetCookie("access_token", token, 3600, "/", "localhost", false, true)
-	ctx.Status(200)
+	ctx.JSON(201, gin.H{"token": token})
 }
 
 // @Summary Регистрация
-// @Tags Authorization
+// @Tags AccountController
 // @Description Регистрация и установление jwt токена в cookie access_token
 // @Accept json
 // @Produce  json
@@ -114,8 +115,9 @@ func (ah AuthHandlers) SignUp(ctx *gin.Context) {
 }
 
 // @Summary Выход из аккаунта
-// @Tags Authorization
+// @Tags AccountController
 // @Description Удаление jwt токена из cookie access_token
+// @Security ApiKeyAuth
 // @Success 200
 // @Failure 400 {object} httpUtil.ResponseError
 // @Router /api/Account/SignOut [post]
@@ -124,8 +126,9 @@ func (ah AuthHandlers) SignOut(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных аккаунта
-// @Tags Authorization
+// @Tags AccountController
 // @Description Проверка входящих данных и обновление данных аккаунта
+// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param request body authHandler.Update.userData true "User data"
@@ -165,8 +168,9 @@ func (ah AuthHandlers) Update(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Получение данных пользователей
-// @Tags Admin Authorization
+// @Tags AdminAccountController
 // @Description Получение данных count пользователей начиная с id = start
+// @Security ApiKeyAuth
 // @Produce json
 // @Param start query uint true "start"
 // @Param count query uint true "count"
@@ -196,8 +200,9 @@ func (ah AuthHandlers) GetUsers(ctx *gin.Context) {
 }
 
 // @Summary Получение пользователя
-// @Tags Admin Authorization
+// @Tags AdminAccountController
 // @Description Получение пользователя с id = {id}
+// @Security ApiKeyAuth
 // @Produce json
 // @Param id path uint true "Account id"
 // @Success 200 {object} entities.User
@@ -221,8 +226,9 @@ func (ah AuthHandlers) GetUser(ctx *gin.Context) {
 }
 
 // @Summary Создание нового пользователя
-// @Tags Admin Authorization
+// @Tags AdminAccountController
 // @Description Создание нового пользователя с указанными данными
+// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param request body authHandler.CreateUser.userData true "User data"
@@ -262,8 +268,9 @@ func (ah AuthHandlers) CreateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags Admin Authorization
+// @Tags AdminAccountController
 // @Description Обновление данных пользователя с id={id}
+// @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param id path uint true "Account id"
@@ -309,8 +316,9 @@ func (ah AuthHandlers) UpdateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags Admin Authorization
+// @Tags AdminAccountController
 // @Description Обновление данных пользователя с id={id}
+// @Security ApiKeyAuth
 // @Param id path uint true "Account id"
 // @Success 200 {object} entities.User
 // @Failure 400 {object} httpUtil.ResponseError
