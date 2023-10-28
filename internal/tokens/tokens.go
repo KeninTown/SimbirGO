@@ -42,3 +42,21 @@ func ParseToken(tokenString string) (entities.Token, error) {
 
 	return entities.Token{}, fmt.Errorf("%s: failed to parse token: %w", op, err)
 }
+
+// black list
+var blackList map[string]bool
+
+func InitBlackList() {
+	blackList = make(map[string]bool)
+}
+
+func RemoveToken(token string) {
+	blackList[token] = true
+}
+
+func IsInBlackList(token string) bool {
+	if val, ok := blackList[token]; val && ok {
+		return true
+	}
+	return false
+}

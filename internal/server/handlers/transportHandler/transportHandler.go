@@ -31,7 +31,7 @@ func New(tu TransportUsecase) TransportHandler {
 //user handlers
 
 // @Summary Получение информации о транспотре
-// @Tags TransportController
+// @Tags 4. TransportController
 // @Description Просмотр информации о транспорте с id = {id}
 // @Produce  json
 // @Param id path uint true "Transport id"
@@ -79,7 +79,7 @@ func (th TransportHandler) GetTransport(ctx *gin.Context) {
 }
 
 // @Summary Создаение транспорта
-// @Tags TransportController
+// @Tags 4. TransportController
 // @Description Создает транспорт у текущего авторизованного пользователя
 // @Security ApiKeyAuth
 // @Accept json
@@ -160,7 +160,7 @@ func (th TransportHandler) CreateTransport(ctx *gin.Context) {
 }
 
 // @Summary Обновление информации о транспотре
-// @Tags TransportController
+// @Tags 4. TransportController
 // @Description Обновление информации о транспорте с id = {id}
 // @Security ApiKeyAuth
 // @Accept json
@@ -247,7 +247,7 @@ func (th TransportHandler) UpdateTransport(ctx *gin.Context) {
 }
 
 // @Summary Удаление транспорта
-// @Tags TransportController
+// @Tags 4. TransportController
 // @Description Удаление транспорта с id = {id} если данные транспорт принадлежит текущему авторизованному пользователю
 // @Security ApiKeyAuth
 // @Param id path uint true "Transport id"
@@ -274,13 +274,13 @@ func (th TransportHandler) DeleteUserTransport(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Информация о транспортных средствах
-// @Tags AdminTransportController
+// @Tags 5. AdminTransportController
 // @Description Получение count транспортных средств с id >= start с типом транспорта transportType
 // @Security ApiKeyAuth
 // @Produce  json
 // @Param start query uint true "start"
 // @Param count query uint true "count"
-// @Param count query string true "transportType"
+// @Param transportType query string true "transportType"
 // @Success 200 {array} entities.Transport
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
@@ -312,7 +312,7 @@ func (th TransportHandler) AdminGetTransports(ctx *gin.Context) {
 }
 
 // @Summary Информация о транспортном средстве
-// @Tags AdminTransportController
+// @Tags 5. AdminTransportController
 // @Description Получение информации о транспортном средстве с id = {id}
 // @Security ApiKeyAuth
 // @Produce json
@@ -339,7 +339,7 @@ func (th TransportHandler) AdminGetTransport(ctx *gin.Context) {
 }
 
 // @Summary Создание транспортного средства
-// @Tags AdminTransportController
+// @Tags 5. AdminTransportController
 // @Description Создание транспортного средства указывая пользователя с id = ownerId
 // @Security ApiKeyAuth
 // @Accept json
@@ -395,7 +395,7 @@ func (th TransportHandler) AdminCreateTransport(ctx *gin.Context) {
 }
 
 // @Summary Обновление транспортного средства
-// @Tags AdminTransportController
+// @Tags 5. AdminTransportController
 // @Description Обновление транспортного средства с id = {id}
 // @Security ApiKeyAuth
 // @Accept json
@@ -459,7 +459,7 @@ func (th TransportHandler) AdminUpdateTransport(ctx *gin.Context) {
 }
 
 // @Summary Удаление транспортного средства
-// @Tags AdminTransportController
+// @Tags 5. AdminTransportController
 // @Description Удаление транспортного средства с id = {id}
 // @Security ApiKeyAuth
 // @Param id path uint true "Transport id"

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"simbirGo/internal/entities"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,6 +14,7 @@ type AuthUsecase interface {
 	MyAccount(id uint) (entities.User, error)
 	SignIn(user entities.User) (string, error)
 	SignUp(user entities.User) (entities.User, string, error)
+	SignOut(token string)
 	Update(user entities.User) (entities.User, error)
 
 	//admin's cases
@@ -31,7 +33,7 @@ func New(uc AuthUsecase) AuthHandlers {
 }
 
 // @Summary Просмотр данных текущего аккаунта
-// @Tags AccountController
+// @Tags 1. AccountController
 // @Description Просмотр информации о текущем авторизованном аккаунте
 // @Produce  json
 // @Security ApiKeyAuth
@@ -50,7 +52,7 @@ func (ah AuthHandlers) MyAccount(ctx *gin.Context) {
 }
 
 // @Summary Вход в аккаунт
-// @Tags AccountController
+// @Tags 1. AccountController
 // @Description Вход в аккаунт и установление в cookie jwt токена авторизации
 // @Accept json
 // @Produce  json
@@ -80,7 +82,7 @@ func (ah AuthHandlers) SignIn(ctx *gin.Context) {
 }
 
 // @Summary Регистрация
-// @Tags AccountController
+// @Tags 1. AccountController
 // @Description Регистрация и установление jwt токена в cookie access_token
 // @Accept json
 // @Produce  json
@@ -115,33 +117,34 @@ func (ah AuthHandlers) SignUp(ctx *gin.Context) {
 }
 
 // @Summary Выход из аккаунта
-// @Tags AccountController
+// @Tags 1. AccountController
 // @Description Удаление jwt токена из cookie access_token
 // @Security ApiKeyAuth
 // @Success 200
 // @Failure 400 {object} httpUtil.ResponseError
+// @Failure 401 {object} httpUtil.ResponseError
 // @Router /api/Account/SignOut [post]
 func (ah AuthHandlers) SignOut(ctx *gin.Context) {
-	ctx.SetCookie("access_token", "", 1, "/", "localhost", false, true)
+	token := strings.Split(ctx.GetHeader("Authorization"), " ")[1]
+	ah.uc.SignOut(token)
+	ctx.Status(200)
 }
 
 // @Summary Обновление данных аккаунта
-// @Tags AccountController
+// @Tags 1. AccountController
 // @Description Проверка входящих данных и обновление данных аккаунта
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param request body authHandler.Update.userData true "User data"
-// @Success 200 {object} entities.User
+// @Success 200 {object} authHandler.Update.userData
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Router /api/Account/Update [put]
 func (ah AuthHandlers) Update(ctx *gin.Context) {
 	type userData struct {
-		Username string  `json:"username" binding:"required"`
-		Password string  `json:"password" binding:"required"`
-		IsAdmin  bool    `json:"isAdmin" binding:"required"`
-		Balance  float64 `json:"balance" binding:"required"`
+		Username string `json:"username" binding:"required"`
+		Password string `json:"password" binding:"required"`
 	}
 	var data userData
 
@@ -154,21 +157,22 @@ func (ah AuthHandlers) Update(ctx *gin.Context) {
 		Id:       id,
 		Username: data.Username,
 		Password: data.Password,
-		IsAdmin:  data.IsAdmin,
-		Balance:  data.Balance,
 	}
 	user, err := ah.uc.Update(user)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, userData{
+		Username: user.Username,
+		Password: user.Password,
+	})
 }
 
 // admin handlers
 
 // @Summary Получение данных пользователей
-// @Tags AdminAccountController
+// @Tags 2. AdminAccountController
 // @Description Получение данных count пользователей начиная с id = start
 // @Security ApiKeyAuth
 // @Produce json
@@ -200,7 +204,7 @@ func (ah AuthHandlers) GetUsers(ctx *gin.Context) {
 }
 
 // @Summary Получение пользователя
-// @Tags AdminAccountController
+// @Tags 2. AdminAccountController
 // @Description Получение пользователя с id = {id}
 // @Security ApiKeyAuth
 // @Produce json
@@ -226,7 +230,7 @@ func (ah AuthHandlers) GetUser(ctx *gin.Context) {
 }
 
 // @Summary Создание нового пользователя
-// @Tags AdminAccountController
+// @Tags 2. AdminAccountController
 // @Description Создание нового пользователя с указанными данными
 // @Security ApiKeyAuth
 // @Accept json
@@ -268,7 +272,7 @@ func (ah AuthHandlers) CreateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags AdminAccountController
+// @Tags 2. AdminAccountController
 // @Description Обновление данных пользователя с id={id}
 // @Security ApiKeyAuth
 // @Accept json
@@ -316,7 +320,7 @@ func (ah AuthHandlers) UpdateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags AdminAccountController
+// @Tags 2. AdminAccountController
 // @Description Обновление данных пользователя с id={id}
 // @Security ApiKeyAuth
 // @Param id path uint true "Account id"

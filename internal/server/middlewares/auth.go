@@ -23,6 +23,10 @@ func CheckAuthification() gin.HandlerFunc {
 			httpUtil.NewResponseError(ctx, 401, fmt.Errorf("invalid jwt token"))
 		}
 		token := authHeaderArray[1]
+		if tokens.IsInBlackList(token) {
+			httpUtil.NewResponseError(ctx, 401, fmt.Errorf("Unauthorized"))
+			return
+		}
 
 		tokenData, err := tokens.ParseToken(token)
 		if err != nil {

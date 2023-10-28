@@ -21,7 +21,7 @@ func New(pu PaymentUsecase) PaymentHandler {
 }
 
 // @Summary Пополнение баланса
-// @Tags PaymentController
+// @Tags 3. PaymentController
 // @Description Добавляет на баланс пользователся с id = {id} 250 000. Администраторы могут изменять баланс любому пользователю, обычные пользователи только себе
 // @Security ApiKeyAuth
 // @Param id path uint true "Account id"

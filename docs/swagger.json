@@ -25,7 +25,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Просмотр данных текущего аккаунта",
                 "responses": {
@@ -60,7 +60,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Вход в аккаунт",
                 "parameters": [
@@ -99,7 +99,7 @@
                 ],
                 "description": "Удаление jwt токена из cookie access_token",
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Выход из аккаунта",
                 "responses": {
@@ -108,6 +108,12 @@
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/httpUtil.ResponseError"
                         }
@@ -125,7 +131,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Регистрация",
                 "parameters": [
@@ -170,7 +176,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Обновление данных аккаунта",
                 "parameters": [
@@ -188,7 +194,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.User"
+                            "$ref": "#/definitions/authHandler.Update.userData"
                         }
                     },
                     "400": {
@@ -218,7 +224,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Получение данных пользователей",
                 "parameters": [
@@ -281,7 +287,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Создание нового пользователя",
                 "parameters": [
@@ -335,7 +341,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Получение пользователя",
                 "parameters": [
@@ -388,7 +394,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -444,7 +450,7 @@
                 ],
                 "description": "Обновление данных пользователя с id={id}",
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -496,7 +502,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Информация о транспортных средствах",
                 "parameters": [
@@ -517,7 +523,7 @@
                     {
                         "type": "string",
                         "description": "transportType",
-                        "name": "count",
+                        "name": "transportType",
                         "in": "query",
                         "required": true
                     }
@@ -566,7 +572,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Создание транспортного средства",
                 "parameters": [
@@ -620,7 +626,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Информация о транспортном средстве",
                 "parameters": [
@@ -673,7 +679,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Обновление транспортного средства",
                 "parameters": [
@@ -729,7 +735,7 @@
                 ],
                 "description": "Удаление транспортного средства с id = {id}",
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Удаление транспортного средства",
                 "parameters": [
@@ -775,7 +781,7 @@
                 ],
                 "description": "Добавляет на баланс пользователся с id = {id} 250 000. Администраторы могут изменять баланс любому пользователю, обычные пользователи только себе",
                 "tags": [
-                    "PaymentController"
+                    "3. PaymentController"
                 ],
                 "summary": "Пополнение баланса",
                 "parameters": [
@@ -827,7 +833,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TransportController"
+                    "4. TransportController"
                 ],
                 "summary": "Создаение транспорта",
                 "parameters": [
@@ -870,7 +876,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TransportController"
+                    "4. TransportController"
                 ],
                 "summary": "Получение информации о транспотре",
                 "parameters": [
@@ -911,7 +917,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TransportController"
+                    "4. TransportController"
                 ],
                 "summary": "Обновление информации о транспотре",
                 "parameters": [
@@ -961,7 +967,7 @@
                 ],
                 "description": "Удаление транспорта с id = {id} если данные транспорт принадлежит текущему авторизованному пользователю",
                 "tags": [
-                    "TransportController"
+                    "4. TransportController"
                 ],
                 "summary": "Удаление транспорта",
                 "parameters": [
@@ -1051,18 +1057,10 @@
         "authHandler.Update.userData": {
             "type": "object",
             "required": [
-                "balance",
-                "isAdmin",
                 "password",
                 "username"
             ],
             "properties": {
-                "balance": {
-                    "type": "number"
-                },
-                "isAdmin": {
-                    "type": "boolean"
-                },
                 "password": {
                     "type": "string"
                 },

@@ -8,6 +8,7 @@ import (
 	"simbirGo/internal/config"
 	"simbirGo/internal/database"
 	"simbirGo/internal/server"
+	"simbirGo/internal/tokens"
 	"simbirGo/internal/usecase/authUsecase"
 	"simbirGo/internal/usecase/paymentUsecase"
 	transportusecase "simbirGo/internal/usecase/transportUsecase"
@@ -43,6 +44,8 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	log.Print("succesfully connect to database")
+
+	tokens.InitBlackList()
 
 	authUc := authUsecase.New(db)
 	paymentUc := paymentUsecase.New(db)

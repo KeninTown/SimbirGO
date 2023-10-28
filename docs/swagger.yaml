@@ -38,17 +38,11 @@ definitions:
     type: object
   authHandler.Update.userData:
     properties:
-      balance:
-        type: number
-      isAdmin:
-        type: boolean
       password:
         type: string
       username:
         type: string
     required:
-    - balance
-    - isAdmin
     - password
     - username
     type: object
@@ -367,7 +361,7 @@ paths:
       - ApiKeyAuth: []
       summary: Просмотр данных текущего аккаунта
       tags:
-      - AccountController
+      - 1. AccountController
   /api/Account/SignIn:
     post:
       consumes:
@@ -393,7 +387,7 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       summary: Вход в аккаунт
       tags:
-      - AccountController
+      - 1. AccountController
   /api/Account/SignOut:
     post:
       description: Удаление jwt токена из cookie access_token
@@ -404,11 +398,15 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
       summary: Выход из аккаунта
       tags:
-      - AccountController
+      - 1. AccountController
   /api/Account/SignUp:
     post:
       consumes:
@@ -434,7 +432,7 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       summary: Регистрация
       tags:
-      - AccountController
+      - 1. AccountController
   /api/Account/Update:
     put:
       consumes:
@@ -453,7 +451,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.User'
+            $ref: '#/definitions/authHandler.Update.userData'
         "400":
           description: Bad Request
           schema:
@@ -466,7 +464,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных аккаунта
       tags:
-      - AccountController
+      - 1. AccountController
   /api/Admin/Account:
     get:
       description: Получение данных count пользователей начиная с id = start
@@ -506,7 +504,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение данных пользователей
       tags:
-      - AdminAccountController
+      - 2. AdminAccountController
     post:
       consumes:
       - application/json
@@ -541,7 +539,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создание нового пользователя
       tags:
-      - AdminAccountController
+      - 2. AdminAccountController
   /api/Admin/Account/{id}:
     delete:
       description: Обновление данных пользователя с id={id}
@@ -572,7 +570,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - AdminAccountController
+      - 2. AdminAccountController
     get:
       description: Получение пользователя с id = {id}
       parameters:
@@ -604,7 +602,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение пользователя
       tags:
-      - AdminAccountController
+      - 2. AdminAccountController
     put:
       consumes:
       - application/json
@@ -644,7 +642,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - AdminAccountController
+      - 2. AdminAccountController
   /api/Admin/Transport:
     get:
       description: Получение count транспортных средств с id >= start с типом транспорта
@@ -662,7 +660,7 @@ paths:
         type: integer
       - description: transportType
         in: query
-        name: count
+        name: transportType
         required: true
         type: string
       produces:
@@ -690,7 +688,7 @@ paths:
       - ApiKeyAuth: []
       summary: Информация о транспортных средствах
       tags:
-      - AdminTransportController
+      - 5. AdminTransportController
     post:
       consumes:
       - application/json
@@ -725,7 +723,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создание транспортного средства
       tags:
-      - AdminTransportController
+      - 5. AdminTransportController
   /api/Admin/Transport/{id}:
     delete:
       description: Удаление транспортного средства с id = {id}
@@ -754,7 +752,7 @@ paths:
       - ApiKeyAuth: []
       summary: Удаление транспортного средства
       tags:
-      - AdminTransportController
+      - 5. AdminTransportController
     get:
       description: Получение информации о транспортном средстве с id = {id}
       parameters:
@@ -786,7 +784,7 @@ paths:
       - ApiKeyAuth: []
       summary: Информация о транспортном средстве
       tags:
-      - AdminTransportController
+      - 5. AdminTransportController
     put:
       consumes:
       - application/json
@@ -826,7 +824,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление транспортного средства
       tags:
-      - AdminTransportController
+      - 5. AdminTransportController
   /api/Payment/Hesoyam/{id}:
     post:
       description: Добавляет на баланс пользователся с id = {id} 250 000. Администраторы
@@ -856,7 +854,7 @@ paths:
       - ApiKeyAuth: []
       summary: Пополнение баланса
       tags:
-      - PaymentController
+      - 3. PaymentController
   /api/Transport:
     post:
       consumes:
@@ -888,7 +886,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создаение транспорта
       tags:
-      - TransportController
+      - 4. TransportController
   /api/Transport/{id}:
     delete:
       description: Удаление транспорта с id = {id} если данные транспорт принадлежит
@@ -914,7 +912,7 @@ paths:
       - ApiKeyAuth: []
       summary: Удаление транспорта
       tags:
-      - TransportController
+      - 4. TransportController
     get:
       description: Просмотр информации о транспорте с id = {id}
       parameters:
@@ -936,7 +934,7 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       summary: Получение информации о транспотре
       tags:
-      - TransportController
+      - 4. TransportController
     put:
       consumes:
       - application/json
@@ -972,7 +970,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление информации о транспотре
       tags:
-      - TransportController
+      - 4. TransportController
 securityDefinitions:
   ApiKeyAuth:
     in: header

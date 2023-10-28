@@ -31,7 +31,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Просмотр данных текущего аккаунта",
                 "responses": {
@@ -66,7 +66,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Вход в аккаунт",
                 "parameters": [
@@ -105,7 +105,7 @@ const docTemplate = `{
                 ],
                 "description": "Удаление jwt токена из cookie access_token",
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Выход из аккаунта",
                 "responses": {
@@ -114,6 +114,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/httpUtil.ResponseError"
                         }
@@ -131,7 +137,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Регистрация",
                 "parameters": [
@@ -176,7 +182,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AccountController"
+                    "1. AccountController"
                 ],
                 "summary": "Обновление данных аккаунта",
                 "parameters": [
@@ -194,7 +200,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.User"
+                            "$ref": "#/definitions/authHandler.Update.userData"
                         }
                     },
                     "400": {
@@ -224,7 +230,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Получение данных пользователей",
                 "parameters": [
@@ -287,7 +293,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Создание нового пользователя",
                 "parameters": [
@@ -341,7 +347,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Получение пользователя",
                 "parameters": [
@@ -394,7 +400,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -450,7 +456,7 @@ const docTemplate = `{
                 ],
                 "description": "Обновление данных пользователя с id={id}",
                 "tags": [
-                    "AdminAccountController"
+                    "2. AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -502,7 +508,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Информация о транспортных средствах",
                 "parameters": [
@@ -523,7 +529,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "transportType",
-                        "name": "count",
+                        "name": "transportType",
                         "in": "query",
                         "required": true
                     }
@@ -572,7 +578,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Создание транспортного средства",
                 "parameters": [
@@ -626,7 +632,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Информация о транспортном средстве",
                 "parameters": [
@@ -679,7 +685,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Обновление транспортного средства",
                 "parameters": [
@@ -735,7 +741,7 @@ const docTemplate = `{
                 ],
                 "description": "Удаление транспортного средства с id = {id}",
                 "tags": [
-                    "AdminTransportController"
+                    "5. AdminTransportController"
                 ],
                 "summary": "Удаление транспортного средства",
                 "parameters": [
@@ -781,7 +787,7 @@ const docTemplate = `{
                 ],
                 "description": "Добавляет на баланс пользователся с id = {id} 250 000. Администраторы могут изменять баланс любому пользователю, обычные пользователи только себе",
                 "tags": [
-                    "PaymentController"
+                    "3. PaymentController"
                 ],
                 "summary": "Пополнение баланса",
                 "parameters": [
@@ -833,7 +839,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "TransportController"
+                    "4. TransportController"
                 ],
                 "summary": "Создаение транспорта",
                 "parameters": [
@@ -876,7 +882,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "TransportController"
+                    "4. TransportController"
                 ],
                 "summary": "Получение информации о транспотре",
                 "parameters": [
@@ -917,7 +923,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "TransportController"
+                    "4. TransportController"
                 ],
                 "summary": "Обновление информации о транспотре",
                 "parameters": [
@@ -967,7 +973,7 @@ const docTemplate = `{
                 ],
                 "description": "Удаление транспорта с id = {id} если данные транспорт принадлежит текущему авторизованному пользователю",
                 "tags": [
-                    "TransportController"
+                    "4. TransportController"
                 ],
                 "summary": "Удаление транспорта",
                 "parameters": [
@@ -1057,18 +1063,10 @@ const docTemplate = `{
         "authHandler.Update.userData": {
             "type": "object",
             "required": [
-                "balance",
-                "isAdmin",
                 "password",
                 "username"
             ],
             "properties": {
-                "balance": {
-                    "type": "number"
-                },
-                "isAdmin": {
-                    "type": "boolean"
-                },
                 "password": {
                     "type": "string"
                 },

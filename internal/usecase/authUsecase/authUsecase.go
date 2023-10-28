@@ -67,6 +67,10 @@ func (au AuthUsecase) SignUp(user entities.User) (entities.User, string, error) 
 	return userEntite, token, nil
 }
 
+func (au AuthUsecase) SignOut(token string) {
+	tokens.RemoveToken(token)
+}
+
 func (au AuthUsecase) Update(user entities.User) (entities.User, error) {
 	userModel := au.r.FindUserById(user.Id)
 	if userModel.Id == 0 {
