@@ -112,12 +112,37 @@ func (tu TransportUsecase) AdminCreateTransport(transport entities.Transport) (e
 }
 
 func (tu TransportUsecase) AdminUpdateTransport(transport entities.Transport) (entities.Transport, error) {
+	transportModel := tu.r.FindTranspot(transport.Id)
+	if transportModel.Id == 0 {
+		return entities.Transport{}, fmt.Errorf("transport is not exist")
+	}
+
 	owner := tu.r.FindUserById(transport.OwnerId)
 	if owner.Id == 0 {
 		return entities.Transport{}, fmt.Errorf("user with id = %d is not exist", transport.OwnerId)
 	}
 
-	return tu.UpdateUserTransport(transport)
+	typeId := tu.r.FindTypeByName(transport.TransportType)
+	if typeId == 0 {
+		return entities.Transport{}, fmt.Errorf("invalid transport type")
+	}
+
+	transportModel.OwnerId = transport.OwnerId
+	transportModel.TypeId = typeId
+	transportModel.CanBeRented = transport.CanBeRented
+	transportModel.Model = transport.Model
+	transportModel.Color = transport.Color
+	transportModel.Identifier = transport.Identifier
+	transportModel.Description = transport.Description
+	transportModel.Latitude = transport.Latitude
+	transportModel.Longitude = transport.Longitude
+	transportModel.MinutePrice = transport.MinutePrice
+	transportModel.DayPrice = transport.DayPrice
+
+	tu.r.SaveTransport(transportModel)
+	transportEntite := dto.TransportModelToEntite(transportModel, transport.TransportType)
+
+	return transportEntite, nil
 }
 
 func (tu TransportUsecase) AdminDeleteTransport(id uint) {

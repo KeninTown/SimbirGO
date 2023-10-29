@@ -1,6 +1,8 @@
 package transportHandler
 
 import (
+	"fmt"
+	"math"
 	"net/http"
 	"simbirGo/internal/entities"
 	httpUtil "simbirGo/internal/httputil"
@@ -109,6 +111,23 @@ func (th TransportHandler) CreateTransport(ctx *gin.Context) {
 		return
 	}
 
+	if tData.DayPrice < 0 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		return
+	}
+	if tData.MinutePrice < 0 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		return
+	}
+	if math.Abs(tData.Longitude) > 180 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of longitude"))
+		return
+	}
+	if math.Abs(tData.Latitude) > 90 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of latitude"))
+		return
+	}
+
 	id := ctx.GetUint("id")
 	transport := entities.Transport{
 		OwnerId:       id,
@@ -188,6 +207,23 @@ func (th TransportHandler) UpdateTransport(ctx *gin.Context) {
 	var tData transportData
 	if err := ctx.BindJSON(&tData); err != nil {
 		httpUtil.NewResponseError(ctx, 400, err)
+		return
+	}
+
+	if tData.DayPrice < 0 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		return
+	}
+	if tData.MinutePrice < 0 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		return
+	}
+	if math.Abs(tData.Longitude) > 180 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of longitude"))
+		return
+	}
+	if math.Abs(tData.Latitude) > 90 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of latitude"))
 		return
 	}
 
@@ -371,6 +407,23 @@ func (th TransportHandler) AdminCreateTransport(ctx *gin.Context) {
 		return
 	}
 
+	if tData.DayPrice < 0 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		return
+	}
+	if tData.MinutePrice < 0 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		return
+	}
+	if math.Abs(tData.Longitude) > 180 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of longitude"))
+		return
+	}
+	if math.Abs(tData.Latitude) > 90 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of latitude"))
+		return
+	}
+
 	transport := entities.Transport{
 		OwnerId:       tData.OwnerId,
 		TransportType: tData.TransportType,
@@ -425,6 +478,23 @@ func (th TransportHandler) AdminUpdateTransport(ctx *gin.Context) {
 	var tData transportData
 	if err := ctx.BindJSON(&tData); err != nil {
 		httpUtil.NewResponseError(ctx, 400, err)
+		return
+	}
+
+	if tData.DayPrice < 0 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		return
+	}
+	if tData.MinutePrice < 0 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		return
+	}
+	if math.Abs(tData.Longitude) > 180 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of longitude"))
+		return
+	}
+	if math.Abs(tData.Latitude) > 90 {
+		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of latitude"))
 		return
 	}
 

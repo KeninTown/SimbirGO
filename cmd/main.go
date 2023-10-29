@@ -11,6 +11,7 @@ import (
 	"simbirGo/internal/tokens"
 	"simbirGo/internal/usecase/authUsecase"
 	"simbirGo/internal/usecase/paymentUsecase"
+	"simbirGo/internal/usecase/rentUsecase"
 	transportusecase "simbirGo/internal/usecase/transportUsecase"
 	"syscall"
 )
@@ -50,10 +51,10 @@ func main() {
 	authUc := authUsecase.New(db)
 	paymentUc := paymentUsecase.New(db)
 	transportUc := transportusecase.New(db)
-
+	rentUc := rentUsecase.New(db)
 	srv := server.New(":80")
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT, os.Interrupt)
 	defer stop()
 
-	srv.Run(ctx, authUc, paymentUc, transportUc)
+	srv.Run(ctx, authUc, paymentUc, transportUc, rentUc)
 }

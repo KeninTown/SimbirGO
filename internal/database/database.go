@@ -122,3 +122,72 @@ func (db Database) FindTranspots(start, count int, transportId uint) []models.Tr
 func (db Database) DeleteTransport(id uint) {
 	db.db.Delete(&models.Transport{}, "id=?", id)
 }
+
+// rent repository
+func (db Database) FindAvalibleTransports(lat, long, radius float64, typeId uint) []models.Transport {
+	var query string
+	if typeId == 0 {
+		query = fmt.Sprintf("SELECT * FROM transports WHERE SQRT(power((latitude - %f), 2) + power((longitude - %f), 2)) <= %f AND can_be_rented = true", lat, long, radius)
+	} else {
+		query = fmt.Sprintf("SELECT * FROM transports WHERE SQRT(power((latitude - %f), 2) + power((longitude - %f), 2)) <= %f AND type_id = %d AND can_be_rented = true", lat, long, radius, typeId)
+	}
+
+	rows, err := db.db.Raw(query).Rows()
+	if err != nil {
+		fmt.Println("err: ", err.Error())
+		return []models.Transport{}
+	}
+	defer rows.Close()
+	var transports []models.Transport
+
+	for rows.Next() {
+		var (
+			id          uint
+			ownerId     uint
+			typeId      uint
+			canBeRented bool
+			model       string
+			color       string
+			identifier  string
+			description string
+			latitude    float64
+			longitude   float64
+			minutePrice float64
+			dayPrice    float64
+		)
+
+		err := rows.Scan(&id, &ownerId, &typeId, &model, &color, &identifier, &description,
+			&latitude, &longitude, &minutePrice, &dayPrice, &canBeRented)
+		if err != nil {
+			log.Println("database.FindAvalibleTransports(): ", err.Error())
+		}
+
+		transports = append(transports, models.Transport{
+			Id:          id,
+			OwnerId:     ownerId,
+			TypeId:      typeId,
+			CanBeRented: canBeRented,
+			Model:       model,
+			Color:       color,
+			Identifier:  identifier,
+			Description: description,
+			Latitude:    latitude,
+			Longitude:   longitude,
+			MinutePrice: minutePrice,
+			DayPrice:    dayPrice,
+		})
+	}
+	fmt.Println(transports)
+	return transports
+}
+
+func (db Database) FindRentById(id int) models.Rent {
+	var rent models.Rent
+	db.db.Find(&rent, "id = ?", id)
+	return rent
+}
+
+func (db Database) CreateRent(rent models.Rent) models.Rent {
+	db.db.Create(&rent)
+	return rent
+}

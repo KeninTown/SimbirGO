@@ -1,14 +1,18 @@
 package models
 
+import (
+	"time"
+)
+
 type Rent struct {
-	Id          uint      `json:"id" gorm:"primaryKey"`
-	TransportId uint      `json:"transportId"`
+	Id          uint      `gorm:"primaryKey"`
+	TransportId uint      `gorm:"not null"`
 	Transport   Transport `gorm:"foreignKey:TransportId"`
-	UserId      uint      `json:"userId"`
+	UserId      uint      `gorm:"not null"`
 	User        User      `gorm:"foreignKey:UserId; not null"`
-	TimeStart   string    `json:"timeStart" gorm:"not null"`
-	TimeEnd     string    `json:"timeEnd"`
-	PriceOfUnit float64   `json:"priceOfUnit" gorm:"not null"`
-	PriceType   string    `json:"priceType" gorm:"not null"`
-	FinalPrice  float64   `json:"finalPrice"`
+	TimeStart   time.Time `gorm:"not null; type: timestamptz"`
+	TimeEnd     *time.Time `gorm:"default:null"`
+	PriceOfUnit float64   `gorm:"not null"`
+	PriceType   string    `gorm:"not null"`
+	FinalPrice  float64   `gorm:"default:null"`
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"simbirGo/internal/server/handlers/authHandler"
 	"simbirGo/internal/server/handlers/paymentHandler"
+	"simbirGo/internal/server/handlers/rentHandler"
 	"simbirGo/internal/server/handlers/transportHandler"
 	middleware "simbirGo/internal/server/middlewares"
 	"time"
@@ -35,7 +36,7 @@ func New(addr string) Server {
 	}
 }
 
-func (s *Server) Run(ctx context.Context, uc authHandler.AuthUsecase, pu paymentHandler.PaymentUsecase, tu transportHandler.TransportUsecase) {
+func (s *Server) Run(ctx context.Context, uc authHandler.AuthUsecase, pu paymentHandler.PaymentUsecase, tu transportHandler.TransportUsecase, ru rentHandler.RentUsecase) {
 	//swagger route
 	s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -78,6 +79,16 @@ func (s *Server) Run(ctx context.Context, uc authHandler.AuthUsecase, pu payment
 	transportAdminRoutes.PUT("/:id", th.AdminUpdateTransport)
 	transportAdminRoutes.DELETE("/:id", th.DeleteTransport)
 
+	//rent routes
+	rh := rentHandler.New(ru)
+
+	s.router.GET("/api/Rent/Transport", rh.GetAvalibleTransport)
+
+	//admin rent routes
+	rentsAdminRoutes := s.router.Group("/api/Admin", middleware.CheckAuthification(), middleware.CheckAdminStatus())
+	rentsAdminRoutes.GET("/Rent/:id", rh.AdminGetRent)
+	rentsAdminRoutes.POST("/Rent", rh.AdminCreateRent)
+
 	srv := http.Server{
 		Addr:    s.addr,
 		Handler: s.router,
@@ -85,7 +96,7 @@ func (s *Server) Run(ctx context.Context, uc authHandler.AuthUsecase, pu payment
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
-			log.Println("failed to listen")
+			log.Println("failed to listen server")
 		}
 	}()
 
