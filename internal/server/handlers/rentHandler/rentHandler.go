@@ -274,7 +274,7 @@ func (rh RentHandler) UserEndRent(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Получение аренды
-// @Tags AdminRentController
+// @Tags RentControllerAdmin
 // @Description Получение аренды с id = {rentid}
 // @Security ApiKeyAuth
 // @Produce  json
@@ -301,7 +301,7 @@ func (rh RentHandler) AdminGetRent(ctx *gin.Context) {
 }
 
 // @Summary Получение аренды
-// @Tags AdminRentController
+// @Tags RentControllerAdmin
 // @Description Получение истории всех аренд пользователем с id = {userid}
 // @Security ApiKeyAuth
 // @Produce  json
@@ -328,7 +328,7 @@ func (rh RentHandler) AdminGetUserHistory(ctx *gin.Context) {
 }
 
 // @Summary Получение аренды
-// @Tags AdminRentController
+// @Tags RentControllerAdmin
 // @Description Получение истории всех аренд пользователем с id = {transportId}
 // @Security ApiKeyAuth
 // @Produce  json
@@ -357,7 +357,7 @@ func (rh RentHandler) AdminGetTransportHistory(ctx *gin.Context) {
 }
 
 // @Summary Создание новой аренды
-// @Tags AdminRentController
+// @Tags RentControllerAdmin
 // @Description Создание аренды транспорта с id = transportId пользователем с id = userId
 // @Security ApiKeyAuth
 // @Accept json
@@ -429,7 +429,7 @@ func (rh RentHandler) AdminCreateRent(ctx *gin.Context) {
 }
 
 // @Summary Завершение аренды
-// @Tags AdminRentController
+// @Tags RentControllerAdmin
 // @Description Завершение аренды транспорта с id = {rentId}.
 // @Description Происходит рассчет итоговой суммы аренды и если она оказывается больше,
 // @Description чем сумма на счете пользователя, то в завершить аренду нельзя.
@@ -471,7 +471,7 @@ func (rh RentHandler) AdminEndRent(ctx *gin.Context) {
 }
 
 // @Summary Обновление аренды
-// @Tags AdminRentController
+// @Tags RentControllerAdmin
 // @Description Обновление аренды с id = {rentId}
 // @Description Если в обновлении аренды указывается дата ее окончания, то аренда считается завершенной.
 // @Description Происходит рассчет итоговой суммы аренды и если она оказывается больше,
@@ -555,7 +555,7 @@ func (rh RentHandler) AdminUpdateRent(ctx *gin.Context) {
 }
 
 // @Summary Удаление аренды
-// @Tags AdminRentController
+// @Tags RentControllerAdmin
 // @Description Удаление аренды с id = {rentId}
 // @Security ApiKeyAuth
 // @Produce json

@@ -1,6 +1,0 @@
-user: "postgres"
-password: "veryAdmin"
-host: "localhost"
-port: 5432
-sslmode: "disable"
-dbname: postgres

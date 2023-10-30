@@ -32,19 +32,36 @@ func Connect(cfg *config.Config) (Database, error) {
 		return Database{}, fmt.Errorf("%s: failed to migrate database: %w", op, err)
 	}
 	//fill transport type [Car, Bike, Scooter]
-	var transpotType []models.TransportType
-	db.Find(&transpotType)
-	if len(transpotType) != 3 {
+	var tType models.TransportType
+	db.Find(&tType, "type = 'Car'")
+	if tType.Id == 0 {
 		db.Create(&models.TransportType{Type: "Car"})
-		db.Create(&models.TransportType{Type: "Bike"})
+	}
+	db.Find(&tType, "type = 'Scooter'")
+	if tType.Id == 0 {
 		db.Create(&models.TransportType{Type: "Scooter"})
 	}
+	db.Find(&tType, "type = 'Bike'")
+	if tType.Id == 0 {
+		db.Create(&models.TransportType{Type: "Bike"})
+	}
 
-	var rentType []models.RentType
-	db.Find(&rentType)
-	if len(rentType) != 3 {
-		db.Create(&models.TransportType{Type: "Minutes"})
-		db.Create(&models.TransportType{Type: "Days"})
+	// var transpotType []models.TransportType
+	// db.Find(&transpotType)
+	// if len(transpotType) != 3 {
+	// 	db.Create(&models.TransportType{Type: "Car"})
+	// 	db.Create(&models.TransportType{Type: "Bike"})
+	// 	db.Create(&models.TransportType{Type: "Scooter"})
+	// }
+
+	var rentType models.RentType
+	db.Find(&rentType, "type = 'Minutes'")
+	if rentType.Id == 0 {
+		db.Create(&models.RentType{Type: "Minutes"})
+	}
+	db.Find(&rentType, "type = 'Days'")
+	if rentType.Id == 0 {
+		db.Create(&models.RentType{Type: "Days"})
 	}
 
 	log.Println("succesfully migrate database")

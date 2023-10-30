@@ -224,7 +224,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Получение данных пользователей",
                 "parameters": [
@@ -287,7 +287,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Создание нового пользователя",
                 "parameters": [
@@ -341,7 +341,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Получение пользователя",
                 "parameters": [
@@ -394,7 +394,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -450,7 +450,7 @@
                 ],
                 "description": "Обновление данных пользователя с id={id}",
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -505,7 +505,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Создание новой аренды",
                 "parameters": [
@@ -559,7 +559,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Завершение аренды",
                 "parameters": [
@@ -614,7 +614,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Обновление аренды",
                 "parameters": [
@@ -673,7 +673,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Удаление аренды",
                 "parameters": [
@@ -722,7 +722,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Получение аренды",
                 "parameters": [
@@ -774,7 +774,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Информация о транспортных средствах",
                 "parameters": [
@@ -844,7 +844,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Создание транспортного средства",
                 "parameters": [
@@ -898,7 +898,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Информация о транспортном средстве",
                 "parameters": [
@@ -951,7 +951,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Обновление транспортного средства",
                 "parameters": [
@@ -1007,7 +1007,7 @@
                 ],
                 "description": "Удаление транспортного средства с id = {id}",
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Удаление транспортного средства",
                 "parameters": [
@@ -1056,7 +1056,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Получение аренды",
                 "parameters": [
@@ -1111,7 +1111,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Получение аренды",
                 "parameters": [

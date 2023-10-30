@@ -313,7 +313,7 @@ func (th TransportHandler) UserDeleteTransport(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Информация о транспортных средствах
-// @Tags AdminTransportController
+// @Tags TransportControllerAdmin
 // @Description Получение count транспортных средств с id >= start с типом транспорта transportType
 // @Security ApiKeyAuth
 // @Produce  json
@@ -351,7 +351,7 @@ func (th TransportHandler) AdminGetTransports(ctx *gin.Context) {
 }
 
 // @Summary Информация о транспортном средстве
-// @Tags AdminTransportController
+// @Tags TransportControllerAdmin
 // @Description Получение информации о транспортном средстве с id = {id}
 // @Security ApiKeyAuth
 // @Produce json
@@ -378,7 +378,7 @@ func (th TransportHandler) AdminGetTransport(ctx *gin.Context) {
 }
 
 // @Summary Создание транспортного средства
-// @Tags AdminTransportController
+// @Tags TransportControllerAdmin
 // @Description Создание транспортного средства указывая пользователя с id = ownerId
 // @Security ApiKeyAuth
 // @Accept json
@@ -451,7 +451,7 @@ func (th TransportHandler) AdminCreateTransport(ctx *gin.Context) {
 }
 
 // @Summary Обновление транспортного средства
-// @Tags AdminTransportController
+// @Tags TransportControllerAdmin
 // @Description Обновление транспортного средства с id = {id}
 // @Security ApiKeyAuth
 // @Accept json
@@ -532,7 +532,7 @@ func (th TransportHandler) AdminUpdateTransport(ctx *gin.Context) {
 }
 
 // @Summary Удаление транспортного средства
-// @Tags AdminTransportController
+// @Tags TransportControllerAdmin
 // @Description Удаление транспортного средства с id = {id}
 // @Security ApiKeyAuth
 // @Param id path uint true "Transport id"

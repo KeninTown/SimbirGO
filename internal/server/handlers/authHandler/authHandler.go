@@ -175,7 +175,7 @@ func (ah AuthHandlers) UserUpdate(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Получение данных пользователей
-// @Tags AdminAccountController
+// @Tags AccountControllerAdmin
 // @Description Получение данных count пользователей начиная с id = start
 // @Security ApiKeyAuth
 // @Produce json
@@ -207,7 +207,7 @@ func (ah AuthHandlers) AdminGetUsers(ctx *gin.Context) {
 }
 
 // @Summary Получение пользователя
-// @Tags AdminAccountController
+// @Tags AccountControllerAdmin
 // @Description Получение пользователя с id = {id}
 // @Security ApiKeyAuth
 // @Produce json
@@ -233,7 +233,7 @@ func (ah AuthHandlers) AdminGetUser(ctx *gin.Context) {
 }
 
 // @Summary Создание нового пользователя
-// @Tags AdminAccountController
+// @Tags AccountControllerAdmin
 // @Description Создание нового пользователя с указанными данными
 // @Security ApiKeyAuth
 // @Accept json
@@ -275,7 +275,7 @@ func (ah AuthHandlers) AdminCreateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags AdminAccountController
+// @Tags AccountControllerAdmin
 // @Description Обновление данных пользователя с id={id}
 // @Security ApiKeyAuth
 // @Accept json
@@ -323,7 +323,7 @@ func (ah AuthHandlers) AdminUpdateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags AdminAccountController
+// @Tags AccountControllerAdmin
 // @Description Обновление данных пользователя с id={id}
 // @Security ApiKeyAuth
 // @Param id path uint true "Account id"

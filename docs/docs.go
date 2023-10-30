@@ -230,7 +230,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Получение данных пользователей",
                 "parameters": [
@@ -293,7 +293,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Создание нового пользователя",
                 "parameters": [
@@ -347,7 +347,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Получение пользователя",
                 "parameters": [
@@ -400,7 +400,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -456,7 +456,7 @@ const docTemplate = `{
                 ],
                 "description": "Обновление данных пользователя с id={id}",
                 "tags": [
-                    "AdminAccountController"
+                    "AccountControllerAdmin"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -511,7 +511,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Создание новой аренды",
                 "parameters": [
@@ -565,7 +565,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Завершение аренды",
                 "parameters": [
@@ -620,7 +620,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Обновление аренды",
                 "parameters": [
@@ -679,7 +679,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Удаление аренды",
                 "parameters": [
@@ -728,7 +728,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Получение аренды",
                 "parameters": [
@@ -780,7 +780,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Информация о транспортных средствах",
                 "parameters": [
@@ -850,7 +850,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Создание транспортного средства",
                 "parameters": [
@@ -904,7 +904,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Информация о транспортном средстве",
                 "parameters": [
@@ -957,7 +957,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Обновление транспортного средства",
                 "parameters": [
@@ -1013,7 +1013,7 @@ const docTemplate = `{
                 ],
                 "description": "Удаление транспортного средства с id = {id}",
                 "tags": [
-                    "AdminTransportController"
+                    "TransportControllerAdmin"
                 ],
                 "summary": "Удаление транспортного средства",
                 "parameters": [
@@ -1062,7 +1062,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Получение аренды",
                 "parameters": [
@@ -1117,7 +1117,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "AdminRentController"
+                    "RentControllerAdmin"
                 ],
                 "summary": "Получение аренды",
                 "parameters": [

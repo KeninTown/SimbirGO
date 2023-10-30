@@ -572,7 +572,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение данных пользователей
       tags:
-      - AdminAccountController
+      - AccountControllerAdmin
     post:
       consumes:
       - application/json
@@ -607,7 +607,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создание нового пользователя
       tags:
-      - AdminAccountController
+      - AccountControllerAdmin
   /api/Admin/Account/{id}:
     delete:
       description: Обновление данных пользователя с id={id}
@@ -638,7 +638,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - AdminAccountController
+      - AccountControllerAdmin
     get:
       description: Получение пользователя с id = {id}
       parameters:
@@ -670,7 +670,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение пользователя
       tags:
-      - AdminAccountController
+      - AccountControllerAdmin
     put:
       consumes:
       - application/json
@@ -710,7 +710,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - AdminAccountController
+      - AccountControllerAdmin
   /api/Admin/Rent:
     post:
       consumes:
@@ -747,7 +747,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создание новой аренды
       tags:
-      - AdminRentController
+      - RentControllerAdmin
   /api/Admin/Rent/{rentId}:
     delete:
       description: Удаление аренды с id = {rentId}
@@ -778,7 +778,7 @@ paths:
       - ApiKeyAuth: []
       summary: Удаление аренды
       tags:
-      - AdminRentController
+      - RentControllerAdmin
     put:
       consumes:
       - application/json
@@ -822,7 +822,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление аренды
       tags:
-      - AdminRentController
+      - RentControllerAdmin
   /api/Admin/Rent/{rentid}:
     get:
       description: Получение аренды с id = {rentid}
@@ -855,7 +855,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение аренды
       tags:
-      - AdminRentController
+      - RentControllerAdmin
   /api/Admin/Rent/End/{rentId}:
     post:
       description: |-
@@ -891,7 +891,7 @@ paths:
       - ApiKeyAuth: []
       summary: Завершение аренды
       tags:
-      - AdminRentController
+      - RentControllerAdmin
   /api/Admin/Transport:
     get:
       description: Получение count транспортных средств с id >= start с типом транспорта
@@ -937,7 +937,7 @@ paths:
       - ApiKeyAuth: []
       summary: Информация о транспортных средствах
       tags:
-      - AdminTransportController
+      - TransportControllerAdmin
     post:
       consumes:
       - application/json
@@ -972,7 +972,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создание транспортного средства
       tags:
-      - AdminTransportController
+      - TransportControllerAdmin
   /api/Admin/Transport/{id}:
     delete:
       description: Удаление транспортного средства с id = {id}
@@ -1001,7 +1001,7 @@ paths:
       - ApiKeyAuth: []
       summary: Удаление транспортного средства
       tags:
-      - AdminTransportController
+      - TransportControllerAdmin
     get:
       description: Получение информации о транспортном средстве с id = {id}
       parameters:
@@ -1033,7 +1033,7 @@ paths:
       - ApiKeyAuth: []
       summary: Информация о транспортном средстве
       tags:
-      - AdminTransportController
+      - TransportControllerAdmin
     put:
       consumes:
       - application/json
@@ -1073,7 +1073,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление транспортного средства
       tags:
-      - AdminTransportController
+      - TransportControllerAdmin
   /api/Admin/TransportHistory/{transportId}:
     get:
       description: Получение истории всех аренд пользователем с id = {transportId}
@@ -1108,7 +1108,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение аренды
       tags:
-      - AdminRentController
+      - RentControllerAdmin
   /api/Admin/UserHistory/{userid}:
     get:
       description: Получение истории всех аренд пользователем с id = {userid}
@@ -1143,7 +1143,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение аренды
       tags:
-      - AdminRentController
+      - RentControllerAdmin
   /api/Payment/Hesoyam/{id}:
     post:
       description: Добавляет на баланс пользователся с id = {id} 250 000. Администраторы
