@@ -27,7 +27,8 @@ func Connect(cfg *config.Config) (Database, error) {
 		return Database{}, fmt.Errorf("%s: failed to connect to postgres: %w", op, err)
 	}
 
-	if err := db.AutoMigrate(&models.Rent{}, &models.User{}, &models.Transport{}, models.TransportType{}); err != nil {
+	if err := db.AutoMigrate(&models.Rent{}, &models.RentType{}, &models.User{},
+		&models.Transport{}, models.TransportType{}); err != nil {
 		return Database{}, fmt.Errorf("%s: failed to migrate database: %w", op, err)
 	}
 	//fill transport type [Car, Bike, Scooter]
@@ -37,6 +38,13 @@ func Connect(cfg *config.Config) (Database, error) {
 		db.Create(&models.TransportType{Type: "Car"})
 		db.Create(&models.TransportType{Type: "Bike"})
 		db.Create(&models.TransportType{Type: "Scooter"})
+	}
+
+	var rentType []models.RentType
+	db.Find(&rentType)
+	if len(rentType) != 3 {
+		db.Create(&models.TransportType{Type: "Minutes"})
+		db.Create(&models.TransportType{Type: "Days"})
 	}
 
 	log.Println("succesfully migrate database")
@@ -187,7 +195,39 @@ func (db Database) FindRentById(id int) models.Rent {
 	return rent
 }
 
+func (db Database) FindUserRents(id int) []models.Rent {
+	var rents []models.Rent
+	db.db.Order("time_start").Find(&rents, "user_id = ?", id)
+	return rents
+}
+
+func (db Database) FindTransportRents(id int) []models.Rent {
+	var rents []models.Rent
+	db.db.Order("time_start").Find(&rents, "transport_id = ?", id)
+	return rents
+}
+
 func (db Database) CreateRent(rent models.Rent) models.Rent {
 	db.db.Create(&rent)
 	return rent
+}
+
+func (db Database) SaveRent(rent models.Rent) {
+	db.db.Save(&rent)
+}
+
+func (db Database) DeleteRent(id int) {
+	db.db.Delete(&models.Rent{}, "id = ?", id)
+}
+
+func (db Database) FindRentTypeById(id uint) string {
+	var rentType models.TransportType
+	db.db.Find(&rentType, "id=?", id)
+	return rentType.Type
+}
+
+func (db Database) FindRentTypeByName(typeName string) uint {
+	var rentType models.TransportType
+	db.db.Find(&rentType, "type=?", typeName)
+	return rentType.Id
 }

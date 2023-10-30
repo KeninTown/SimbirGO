@@ -31,7 +31,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "1. AccountController"
+                    "AccountController"
                 ],
                 "summary": "Просмотр данных текущего аккаунта",
                 "responses": {
@@ -66,7 +66,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "1. AccountController"
+                    "AccountController"
                 ],
                 "summary": "Вход в аккаунт",
                 "parameters": [
@@ -76,7 +76,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authHandler.SignIn.userCreadentials"
+                            "$ref": "#/definitions/authHandler.UserSignIn.userCreadentials"
                         }
                     }
                 ],
@@ -105,7 +105,7 @@ const docTemplate = `{
                 ],
                 "description": "Удаление jwt токена из cookie access_token",
                 "tags": [
-                    "1. AccountController"
+                    "AccountController"
                 ],
                 "summary": "Выход из аккаунта",
                 "responses": {
@@ -137,7 +137,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "1. AccountController"
+                    "AccountController"
                 ],
                 "summary": "Регистрация",
                 "parameters": [
@@ -147,7 +147,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authHandler.SignUp.userData"
+                            "$ref": "#/definitions/authHandler.UserSignUp.userData"
                         }
                     }
                 ],
@@ -182,7 +182,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "1. AccountController"
+                    "AccountController"
                 ],
                 "summary": "Обновление данных аккаунта",
                 "parameters": [
@@ -192,7 +192,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authHandler.Update.userData"
+                            "$ref": "#/definitions/authHandler.UserUpdate.userData"
                         }
                     }
                 ],
@@ -200,7 +200,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authHandler.Update.userData"
+                            "$ref": "#/definitions/authHandler.UserUpdate.userData"
                         }
                     },
                     "400": {
@@ -230,7 +230,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "2. AdminAccountController"
+                    "AdminAccountController"
                 ],
                 "summary": "Получение данных пользователей",
                 "parameters": [
@@ -293,7 +293,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "2. AdminAccountController"
+                    "AdminAccountController"
                 ],
                 "summary": "Создание нового пользователя",
                 "parameters": [
@@ -303,7 +303,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authHandler.CreateUser.userData"
+                            "$ref": "#/definitions/authHandler.AdminCreateUser.userData"
                         }
                     }
                 ],
@@ -347,7 +347,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "2. AdminAccountController"
+                    "AdminAccountController"
                 ],
                 "summary": "Получение пользователя",
                 "parameters": [
@@ -400,7 +400,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "2. AdminAccountController"
+                    "AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -417,7 +417,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authHandler.UpdateUser.userData"
+                            "$ref": "#/definitions/authHandler.AdminUpdateUser.userData"
                         }
                     }
                 ],
@@ -456,7 +456,7 @@ const docTemplate = `{
                 ],
                 "description": "Обновление данных пользователя с id={id}",
                 "tags": [
-                    "2. AdminAccountController"
+                    "AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -503,7 +503,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Аредна транспорта с id = transportId пользователем с id = userId",
+                "description": "Создание аренды транспорта с id = transportId пользователем с id = userId",
                 "consumes": [
                     "application/json"
                 ],
@@ -513,10 +513,10 @@ const docTemplate = `{
                 "tags": [
                     "AdminRentController"
                 ],
-                "summary": "Создание аренды",
+                "summary": "Создание новой аренды",
                 "parameters": [
                     {
-                        "description": "rent data",
+                        "description": "Rent data",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -553,17 +553,177 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/Admin/Rent/{id}": {
+        "/api/Admin/Rent/End/{rentId}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Завершение аренды транспорта с id = {rentId}.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше,\nчем сумма на счете пользователя, то в завершить аренду нельзя.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminRentController"
+                ],
+                "summary": "Завершение аренды",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Rent id",
+                        "name": "rentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Rent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Admin/Rent/{rentId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Обновление аренды с id = {rentId}\nЕсли в обновлении аренды указывается дата ее окончания, то аренда считается завершенной.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше,\nчем сумма на счете пользователя, то в обновить аренду нельзя.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminRentController"
+                ],
+                "summary": "Обновление аренды",
+                "parameters": [
+                    {
+                        "description": "Rent data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/rentHandler.AdminUpdateRent.rentData"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Rent id",
+                        "name": "rentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Rent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Удаление аренды с id = {rentId}",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminRentController"
+                ],
+                "summary": "Удаление аренды",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Rent id",
+                        "name": "rentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Admin/Rent/{rentid}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Получение аренды с id = {id}",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Получение аренды с id = {rentid}",
                 "produces": [
                     "application/json"
                 ],
@@ -574,8 +734,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Transport id",
-                        "name": "id",
+                        "description": "Rent id",
+                        "name": "rentid",
                         "in": "path",
                         "required": true
                     }
@@ -620,7 +780,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "5. AdminTransportController"
+                    "AdminTransportController"
                 ],
                 "summary": "Информация о транспортных средствах",
                 "parameters": [
@@ -690,7 +850,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "5. AdminTransportController"
+                    "AdminTransportController"
                 ],
                 "summary": "Создание транспортного средства",
                 "parameters": [
@@ -744,7 +904,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "5. AdminTransportController"
+                    "AdminTransportController"
                 ],
                 "summary": "Информация о транспортном средстве",
                 "parameters": [
@@ -797,7 +957,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "5. AdminTransportController"
+                    "AdminTransportController"
                 ],
                 "summary": "Обновление транспортного средства",
                 "parameters": [
@@ -853,7 +1013,7 @@ const docTemplate = `{
                 ],
                 "description": "Удаление транспортного средства с id = {id}",
                 "tags": [
-                    "5. AdminTransportController"
+                    "AdminTransportController"
                 ],
                 "summary": "Удаление транспортного средства",
                 "parameters": [
@@ -890,6 +1050,116 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/Admin/TransportHistory/{transportId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение истории всех аренд пользователем с id = {transportId}",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminRentController"
+                ],
+                "summary": "Получение аренды",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "transportId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Rent"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Admin/UserHistory/{userid}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение истории всех аренд пользователем с id = {userid}",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminRentController"
+                ],
+                "summary": "Получение аренды",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User id",
+                        "name": "userid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Rent"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/Payment/Hesoyam/{id}": {
             "post": {
                 "security": [
@@ -899,7 +1169,7 @@ const docTemplate = `{
                 ],
                 "description": "Добавляет на баланс пользователся с id = {id} 250 000. Администраторы могут изменять баланс любому пользователю, обычные пользователи только себе",
                 "tags": [
-                    "3. PaymentController"
+                    "PaymentController"
                 ],
                 "summary": "Пополнение баланса",
                 "parameters": [
@@ -936,13 +1206,161 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/Rent/Transport": {
+        "/api/Rent/End/{rentId}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Окончание аренды транспорта с id = {transportid}.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше,\nчем сумма на счете пользователя, то в завершить аренду нельзя.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RentController"
+                ],
+                "summary": "Окончание аренды",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "rentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "lat",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "long",
+                        "name": "long",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Rent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Rent/MyHistory": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
+                "description": "Получение истории всех аренд пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RentController"
+                ],
+                "summary": "Получение истории аредны пользователя",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Rent"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Rent/New/{transportId}": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Создание новой аредны транспорта с id = {transportid}.\nВ параметра rentType указывается тип аренды: [Minutes, Days].",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RentController"
+                ],
+                "summary": "Новая аренда транспорта",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "transportId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Rent type: [Minutes, Days]",
+                        "name": "rentType",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Rent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Rent/Transport": {
+            "get": {
                 "description": "Получение транспорта доступного для аренды по параметрам его расположения и типу транспорта",
                 "produces": [
                     "application/json"
@@ -1000,6 +1418,101 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/Rent/TransportHistory/{transportId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение истории всех аренд транспорта с id = {transportId}.\nДанные может получить только владелец транспорта.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RentController"
+                ],
+                "summary": "Получение истории аредны транспорта",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transport id",
+                        "name": "transportId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entities.Rent"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Rent/{rentid}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение данных аренды с id = {rentid}. Данные могут получить только арендатор и арендодатель.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RentController"
+                ],
+                "summary": "Получение аренды пользователя",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Rent id",
+                        "name": "rentid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Rent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/Transport": {
             "post": {
                 "security": [
@@ -1015,7 +1528,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "4. TransportController"
+                    "TransportController"
                 ],
                 "summary": "Создаение транспорта",
                 "parameters": [
@@ -1025,7 +1538,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/transportHandler.CreateTransport.transportData"
+                            "$ref": "#/definitions/transportHandler.UserCreateTransport.transportData"
                         }
                     }
                 ],
@@ -1033,7 +1546,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/transportHandler.CreateTransport.responseData"
+                            "$ref": "#/definitions/transportHandler.UserCreateTransport.responseData"
                         }
                     },
                     "400": {
@@ -1058,7 +1571,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "4. TransportController"
+                    "TransportController"
                 ],
                 "summary": "Получение информации о транспотре",
                 "parameters": [
@@ -1074,7 +1587,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/transportHandler.GetTransport.transportData"
+                            "$ref": "#/definitions/transportHandler.UserGetTransport.transportData"
                         }
                     },
                     "400": {
@@ -1099,7 +1612,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "4. TransportController"
+                    "TransportController"
                 ],
                 "summary": "Обновление информации о транспотре",
                 "parameters": [
@@ -1116,7 +1629,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/transportHandler.UpdateTransport.transportData"
+                            "$ref": "#/definitions/transportHandler.UserUpdateTransport.transportData"
                         }
                     }
                 ],
@@ -1124,7 +1637,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/transportHandler.UpdateTransport.responseData"
+                            "$ref": "#/definitions/transportHandler.UserUpdateTransport.responseData"
                         }
                     },
                     "400": {
@@ -1149,7 +1662,7 @@ const docTemplate = `{
                 ],
                 "description": "Удаление транспорта с id = {id} если данные транспорт принадлежит текущему авторизованному пользователю",
                 "tags": [
-                    "4. TransportController"
+                    "TransportController"
                 ],
                 "summary": "Удаление транспорта",
                 "parameters": [
@@ -1182,7 +1695,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "authHandler.CreateUser.userData": {
+        "authHandler.AdminCreateUser.userData": {
             "type": "object",
             "required": [
                 "password",
@@ -1203,55 +1716,7 @@ const docTemplate = `{
                 }
             }
         },
-        "authHandler.SignIn.userCreadentials": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "authHandler.SignUp.userData": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "isAdmin": {
-                    "type": "boolean"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "authHandler.Update.userData": {
-            "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "authHandler.UpdateUser.userData": {
+        "authHandler.AdminUpdateUser.userData": {
             "type": "object",
             "required": [
                 "password",
@@ -1264,6 +1729,54 @@ const docTemplate = `{
                 "isAdmin": {
                     "type": "boolean"
                 },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "authHandler.UserSignIn.userCreadentials": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "authHandler.UserSignUp.userData": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "authHandler.UserUpdate.userData": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
                 "password": {
                     "type": "string"
                 },
@@ -1285,7 +1798,11 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "priceType": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Minutes",
+                        " Days"
+                    ]
                 },
                 "timeEnd": {
                     "type": "string"
@@ -1338,7 +1855,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "transportType": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Car",
+                        " Scooter",
+                        " Bike"
+                    ]
                 }
             }
         },
@@ -1376,6 +1898,36 @@ const docTemplate = `{
             }
         },
         "rentHandler.AdminCreateRent.rentData": {
+            "type": "object",
+            "required": [
+                "priceOfUnit",
+                "priceType",
+                "timeStart",
+                "transportId",
+                "userId"
+            ],
+            "properties": {
+                "priceOfUnit": {
+                    "type": "number"
+                },
+                "priceType": {
+                    "type": "string"
+                },
+                "timeEnd": {
+                    "type": "string"
+                },
+                "timeStart": {
+                    "type": "string"
+                },
+                "transportId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "rentHandler.AdminUpdateRent.rentData": {
             "type": "object",
             "required": [
                 "priceOfUnit",
@@ -1499,7 +2051,7 @@ const docTemplate = `{
                 }
             }
         },
-        "transportHandler.CreateTransport.responseData": {
+        "transportHandler.UserCreateTransport.responseData": {
             "type": "object",
             "required": [
                 "color",
@@ -1545,7 +2097,7 @@ const docTemplate = `{
                 }
             }
         },
-        "transportHandler.CreateTransport.transportData": {
+        "transportHandler.UserCreateTransport.transportData": {
             "type": "object",
             "required": [
                 "color",
@@ -1588,7 +2140,7 @@ const docTemplate = `{
                 }
             }
         },
-        "transportHandler.GetTransport.transportData": {
+        "transportHandler.UserGetTransport.transportData": {
             "type": "object",
             "required": [
                 "color",
@@ -1631,7 +2183,7 @@ const docTemplate = `{
                 }
             }
         },
-        "transportHandler.UpdateTransport.responseData": {
+        "transportHandler.UserUpdateTransport.responseData": {
             "type": "object",
             "required": [
                 "color",
@@ -1677,7 +2229,7 @@ const docTemplate = `{
                 }
             }
         },
-        "transportHandler.UpdateTransport.transportData": {
+        "transportHandler.UserUpdateTransport.transportData": {
             "type": "object",
             "required": [
                 "color",

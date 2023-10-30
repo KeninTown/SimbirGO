@@ -5,7 +5,7 @@ import (
 	"simbirGo/internal/entities"
 )
 
-func RentEntitieToModel(rent entities.Rent) models.Rent {
+func RentEntitieToModel(rent entities.Rent, rentType uint) models.Rent {
 	return models.Rent{
 		Id:          rent.Id,
 		TransportId: rent.TransportId,
@@ -13,12 +13,12 @@ func RentEntitieToModel(rent entities.Rent) models.Rent {
 		TimeStart:   rent.TimeStart,
 		TimeEnd:     rent.TimeEnd,
 		PriceOfUnit: rent.PriceOfUnit,
-		PriceType:   rent.PriceType,
+		PriceTypeId: rentType,
 		FinalPrice:  rent.FinalPrice,
 	}
 }
 
-func RentModelToEntitie(rent models.Rent) entities.Rent {
+func RentModelToEntitie(rent models.Rent, rentType string) entities.Rent {
 	return entities.Rent{
 		Id:          rent.Id,
 		TransportId: rent.TransportId,
@@ -26,7 +26,7 @@ func RentModelToEntitie(rent models.Rent) entities.Rent {
 		TimeStart:   rent.TimeStart,
 		TimeEnd:     rent.TimeEnd,
 		PriceOfUnit: rent.PriceOfUnit,
-		PriceType:   rent.PriceType,
+		PriceType:   rentType,
 		FinalPrice:  rent.FinalPrice,
 	}
 }

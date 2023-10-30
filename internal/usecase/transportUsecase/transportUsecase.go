@@ -145,6 +145,11 @@ func (tu TransportUsecase) AdminUpdateTransport(transport entities.Transport) (e
 	return transportEntite, nil
 }
 
-func (tu TransportUsecase) AdminDeleteTransport(id uint) {
+func (tu TransportUsecase) AdminDeleteTransport(id uint) error {
+	transport := tu.r.FindTranspot(id)
+	if transport.Id == 0 {
+		return fmt.Errorf("transport is not exist")
+	}
 	tu.r.DeleteTransport(id)
+	return nil
 }

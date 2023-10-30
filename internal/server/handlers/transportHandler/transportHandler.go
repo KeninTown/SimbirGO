@@ -12,14 +12,17 @@ import (
 )
 
 type TransportUsecase interface {
+	//user's cases
 	GetTransport(id uint) (entities.Transport, error)
 	CreateTransport(transport entities.Transport) (entities.Transport, error)
 	UpdateUserTransport(transport entities.Transport) (entities.Transport, error)
 	DeleteUserTransport(userId, transportId uint) error
 	GetTransports(start, count int, transportType string) ([]entities.Transport, error)
+
+	// admin's cases
 	AdminCreateTransport(transport entities.Transport) (entities.Transport, error)
 	AdminUpdateTransport(transport entities.Transport) (entities.Transport, error)
-	AdminDeleteTransport(id uint)
+	AdminDeleteTransport(id uint) error
 }
 
 type TransportHandler struct {
@@ -33,14 +36,14 @@ func New(tu TransportUsecase) TransportHandler {
 //user handlers
 
 // @Summary Получение информации о транспотре
-// @Tags 4. TransportController
+// @Tags TransportController
 // @Description Просмотр информации о транспорте с id = {id}
 // @Produce  json
 // @Param id path uint true "Transport id"
-// @Success 200 {object} transportHandler.GetTransport.transportData
+// @Success 200 {object} transportHandler.UserGetTransport.transportData
 // @Failure 400 {object} httpUtil.ResponseError
 // @Router /api/Transport/{id} [get]
-func (th TransportHandler) GetTransport(ctx *gin.Context) {
+func (th TransportHandler) UserGetTransport(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
@@ -81,17 +84,17 @@ func (th TransportHandler) GetTransport(ctx *gin.Context) {
 }
 
 // @Summary Создаение транспорта
-// @Tags 4. TransportController
+// @Tags TransportController
 // @Description Создает транспорт у текущего авторизованного пользователя
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce  json
-// @Param request body transportHandler.CreateTransport.transportData true "Transport data"
-// @Success 201 {object} transportHandler.CreateTransport.responseData
+// @Param request body transportHandler.UserCreateTransport.transportData true "Transport data"
+// @Success 201 {object} transportHandler.UserCreateTransport.responseData
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Router /api/Transport [post]
-func (th TransportHandler) CreateTransport(ctx *gin.Context) {
+func (th TransportHandler) UserCreateTransport(ctx *gin.Context) {
 	type transportData struct {
 		TransportType string  `json:"transportType" binding:"required"`
 		CanBeRented   bool    `json:"canBeRented"`
@@ -179,18 +182,18 @@ func (th TransportHandler) CreateTransport(ctx *gin.Context) {
 }
 
 // @Summary Обновление информации о транспотре
-// @Tags 4. TransportController
+// @Tags TransportController
 // @Description Обновление информации о транспорте с id = {id}
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce  json
 // @Param id path uint true "Transport id"
-// @Param request body transportHandler.UpdateTransport.transportData true "Transport data"
-// @Success 200 {object} transportHandler.UpdateTransport.responseData
+// @Param request body transportHandler.UserUpdateTransport.transportData true "Transport data"
+// @Success 200 {object} transportHandler.UserUpdateTransport.responseData
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Router /api/Transport/{id} [put]
-func (th TransportHandler) UpdateTransport(ctx *gin.Context) {
+func (th TransportHandler) UserUpdateTransport(ctx *gin.Context) {
 	type transportData struct {
 		TransportType string  `json:"transportType" binding:"required"`
 		CanBeRented   bool    `json:"canBeRented"`
@@ -283,7 +286,7 @@ func (th TransportHandler) UpdateTransport(ctx *gin.Context) {
 }
 
 // @Summary Удаление транспорта
-// @Tags 4. TransportController
+// @Tags TransportController
 // @Description Удаление транспорта с id = {id} если данные транспорт принадлежит текущему авторизованному пользователю
 // @Security ApiKeyAuth
 // @Param id path uint true "Transport id"
@@ -291,7 +294,7 @@ func (th TransportHandler) UpdateTransport(ctx *gin.Context) {
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Router /api/Transport/{id} [delete]
-func (th TransportHandler) DeleteUserTransport(ctx *gin.Context) {
+func (th TransportHandler) UserDeleteTransport(ctx *gin.Context) {
 	transportIdStr := ctx.Param("id")
 	transportId, err := strconv.Atoi(transportIdStr)
 	if err != nil || transportId < 0 {
@@ -310,7 +313,7 @@ func (th TransportHandler) DeleteUserTransport(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Информация о транспортных средствах
-// @Tags 5. AdminTransportController
+// @Tags AdminTransportController
 // @Description Получение count транспортных средств с id >= start с типом транспорта transportType
 // @Security ApiKeyAuth
 // @Produce  json
@@ -348,7 +351,7 @@ func (th TransportHandler) AdminGetTransports(ctx *gin.Context) {
 }
 
 // @Summary Информация о транспортном средстве
-// @Tags 5. AdminTransportController
+// @Tags AdminTransportController
 // @Description Получение информации о транспортном средстве с id = {id}
 // @Security ApiKeyAuth
 // @Produce json
@@ -375,7 +378,7 @@ func (th TransportHandler) AdminGetTransport(ctx *gin.Context) {
 }
 
 // @Summary Создание транспортного средства
-// @Tags 5. AdminTransportController
+// @Tags AdminTransportController
 // @Description Создание транспортного средства указывая пользователя с id = ownerId
 // @Security ApiKeyAuth
 // @Accept json
@@ -448,7 +451,7 @@ func (th TransportHandler) AdminCreateTransport(ctx *gin.Context) {
 }
 
 // @Summary Обновление транспортного средства
-// @Tags 5. AdminTransportController
+// @Tags AdminTransportController
 // @Description Обновление транспортного средства с id = {id}
 // @Security ApiKeyAuth
 // @Accept json
@@ -529,7 +532,7 @@ func (th TransportHandler) AdminUpdateTransport(ctx *gin.Context) {
 }
 
 // @Summary Удаление транспортного средства
-// @Tags 5. AdminTransportController
+// @Tags AdminTransportController
 // @Description Удаление транспортного средства с id = {id}
 // @Security ApiKeyAuth
 // @Param id path uint true "Transport id"
@@ -538,7 +541,7 @@ func (th TransportHandler) AdminUpdateTransport(ctx *gin.Context) {
 // @Failure 401 {object} httpUtil.ResponseError
 // @Failure 403 {object} httpUtil.ResponseError
 // @Router /api/Admin/Transport/{id} [delete]
-func (th TransportHandler) DeleteTransport(ctx *gin.Context) {
+func (th TransportHandler) AdminDeleteTransport(ctx *gin.Context) {
 	transportIdStr := ctx.Param("id")
 	transportId, err := strconv.Atoi(transportIdStr)
 	if err != nil || transportId < 0 {
@@ -546,5 +549,11 @@ func (th TransportHandler) DeleteTransport(ctx *gin.Context) {
 		return
 	}
 
-	th.tu.AdminDeleteTransport(uint(transportId))
+	err = th.tu.AdminDeleteTransport(uint(transportId))
+	if err != nil {
+		httpUtil.NewResponseError(ctx, 400, err)
+		return
+	}
+
+	ctx.Status(200)
 }

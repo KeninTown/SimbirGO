@@ -3,6 +3,7 @@ package authHandler
 import (
 	"net/http"
 	"simbirGo/internal/entities"
+	httpUtil "simbirGo/internal/httputil"
 	"strconv"
 	"strings"
 
@@ -21,7 +22,7 @@ type AuthUsecase interface {
 	GetUsers(start, end uint) []entities.User
 	CreateUser(user entities.User) (entities.User, error)
 	UpdateUser(user entities.User) (entities.User, error)
-	DeleteUser(id uint)
+	DeleteUser(id uint) error
 }
 
 type AuthHandlers struct {
@@ -32,8 +33,10 @@ func New(uc AuthUsecase) AuthHandlers {
 	return AuthHandlers{uc: uc}
 }
 
+//user handlers
+
 // @Summary Просмотр данных текущего аккаунта
-// @Tags 1. AccountController
+// @Tags AccountController
 // @Description Просмотр информации о текущем авторизованном аккаунте
 // @Produce  json
 // @Security ApiKeyAuth
@@ -41,7 +44,7 @@ func New(uc AuthUsecase) AuthHandlers {
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Router /api/Account/Me [get]
-func (ah AuthHandlers) MyAccount(ctx *gin.Context) {
+func (ah AuthHandlers) UserMyAccount(ctx *gin.Context) {
 	id := ctx.GetUint("id")
 	user, err := ah.uc.MyAccount(id)
 	if err != nil {
@@ -52,15 +55,15 @@ func (ah AuthHandlers) MyAccount(ctx *gin.Context) {
 }
 
 // @Summary Вход в аккаунт
-// @Tags 1. AccountController
+// @Tags AccountController
 // @Description Вход в аккаунт и установление в cookie jwt токена авторизации
 // @Accept json
 // @Produce  json
-// @Param request body authHandler.SignIn.userCreadentials true "User credentials"
+// @Param request body authHandler.UserSignIn.userCreadentials true "User credentials"
 // @Success 201 {object} string
 // @Failure 400 {object} httpUtil.ResponseError
 // @Router /api/Account/SignIn [post]
-func (ah AuthHandlers) SignIn(ctx *gin.Context) {
+func (ah AuthHandlers) UserSignIn(ctx *gin.Context) {
 	type userCreadentials struct {
 		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
@@ -82,15 +85,15 @@ func (ah AuthHandlers) SignIn(ctx *gin.Context) {
 }
 
 // @Summary Регистрация
-// @Tags 1. AccountController
+// @Tags AccountController
 // @Description Регистрация и установление jwt токена в cookie access_token
 // @Accept json
 // @Produce  json
-// @Param request body authHandler.SignUp.userData true "User data"
+// @Param request body authHandler.UserSignUp.userData true "User data"
 // @Success 201 {object} entities.User
 // @Failure 400 {object} httpUtil.ResponseError
 // @Router /api/Account/SignUp [post]
-func (ah AuthHandlers) SignUp(ctx *gin.Context) {
+func (ah AuthHandlers) UserSignUp(ctx *gin.Context) {
 	type userData struct {
 		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
@@ -117,31 +120,31 @@ func (ah AuthHandlers) SignUp(ctx *gin.Context) {
 }
 
 // @Summary Выход из аккаунта
-// @Tags 1. AccountController
+// @Tags AccountController
 // @Description Удаление jwt токена из cookie access_token
 // @Security ApiKeyAuth
 // @Success 200
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Router /api/Account/SignOut [post]
-func (ah AuthHandlers) SignOut(ctx *gin.Context) {
+func (ah AuthHandlers) UserSignOut(ctx *gin.Context) {
 	token := strings.Split(ctx.GetHeader("Authorization"), " ")[1]
 	ah.uc.SignOut(token)
 	ctx.Status(200)
 }
 
 // @Summary Обновление данных аккаунта
-// @Tags 1. AccountController
+// @Tags AccountController
 // @Description Проверка входящих данных и обновление данных аккаунта
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
-// @Param request body authHandler.Update.userData true "User data"
-// @Success 200 {object} authHandler.Update.userData
+// @Param request body authHandler.UserUpdate.userData true "User data"
+// @Success 200 {object} authHandler.UserUpdate.userData
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Router /api/Account/Update [put]
-func (ah AuthHandlers) Update(ctx *gin.Context) {
+func (ah AuthHandlers) UserUpdate(ctx *gin.Context) {
 	type userData struct {
 		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
@@ -172,7 +175,7 @@ func (ah AuthHandlers) Update(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Получение данных пользователей
-// @Tags 2. AdminAccountController
+// @Tags AdminAccountController
 // @Description Получение данных count пользователей начиная с id = start
 // @Security ApiKeyAuth
 // @Produce json
@@ -183,7 +186,7 @@ func (ah AuthHandlers) Update(ctx *gin.Context) {
 // @Failure 401 {object} httpUtil.ResponseError
 // @Failure 403 {object} httpUtil.ResponseError
 // @Router /api/Admin/Account [get]
-func (ah AuthHandlers) GetUsers(ctx *gin.Context) {
+func (ah AuthHandlers) AdminGetUsers(ctx *gin.Context) {
 	startStr := ctx.Query("start")
 	countStr := ctx.Query("count")
 	start, err := strconv.Atoi(startStr)
@@ -204,7 +207,7 @@ func (ah AuthHandlers) GetUsers(ctx *gin.Context) {
 }
 
 // @Summary Получение пользователя
-// @Tags 2. AdminAccountController
+// @Tags AdminAccountController
 // @Description Получение пользователя с id = {id}
 // @Security ApiKeyAuth
 // @Produce json
@@ -214,7 +217,7 @@ func (ah AuthHandlers) GetUsers(ctx *gin.Context) {
 // @Failure 401 {object} httpUtil.ResponseError
 // @Failure 403 {object} httpUtil.ResponseError
 // @Router /api/Admin/Account/{id} [get]
-func (ah AuthHandlers) GetUser(ctx *gin.Context) {
+func (ah AuthHandlers) AdminGetUser(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
@@ -230,18 +233,18 @@ func (ah AuthHandlers) GetUser(ctx *gin.Context) {
 }
 
 // @Summary Создание нового пользователя
-// @Tags 2. AdminAccountController
+// @Tags AdminAccountController
 // @Description Создание нового пользователя с указанными данными
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
-// @Param request body authHandler.CreateUser.userData true "User data"
+// @Param request body authHandler.AdminCreateUser.userData true "User data"
 // @Success 201 {object} entities.User
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Failure 403 {object} httpUtil.ResponseError
 // @Router /api/Admin/Account [post]
-func (ah AuthHandlers) CreateUser(ctx *gin.Context) {
+func (ah AuthHandlers) AdminCreateUser(ctx *gin.Context) {
 	type userData struct {
 		Username string  `json:"username" binding:"required"`
 		Password string  `json:"password" binding:"required"`
@@ -272,19 +275,19 @@ func (ah AuthHandlers) CreateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags 2. AdminAccountController
+// @Tags AdminAccountController
 // @Description Обновление данных пользователя с id={id}
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
 // @Param id path uint true "Account id"
-// @Param requset body authHandler.UpdateUser.userData true "User data"
+// @Param requset body authHandler.AdminUpdateUser.userData true "User data"
 // @Success 200 {object} entities.User
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Failure 403 {object} httpUtil.ResponseError
 // @Router /api/Admin/Account/{id} [put]
-func (ah AuthHandlers) UpdateUser(ctx *gin.Context) {
+func (ah AuthHandlers) AdminUpdateUser(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
@@ -320,7 +323,7 @@ func (ah AuthHandlers) UpdateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags 2. AdminAccountController
+// @Tags AdminAccountController
 // @Description Обновление данных пользователя с id={id}
 // @Security ApiKeyAuth
 // @Param id path uint true "Account id"
@@ -329,14 +332,19 @@ func (ah AuthHandlers) UpdateUser(ctx *gin.Context) {
 // @Failure 401 {object} httpUtil.ResponseError
 // @Failure 403 {object} httpUtil.ResponseError
 // @Router /api/Admin/Account/{id} [delete]
-func (ah AuthHandlers) DeleteUser(ctx *gin.Context) {
+func (ah AuthHandlers) AdminDeleteUser(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of id param"})
 		return
 	}
-	ah.uc.DeleteUser(uint(id))
+
+	err = ah.uc.DeleteUser(uint(id))
+	if err != nil {
+		httpUtil.NewResponseError(ctx, 400, err)
+		return
+	}
 
 	ctx.Status(http.StatusOK)
 }

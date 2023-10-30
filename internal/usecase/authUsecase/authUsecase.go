@@ -128,6 +128,11 @@ func (au AuthUsecase) UpdateUser(user entities.User) (entities.User, error) {
 	return dto.UserModelToEntitie(userModel), nil
 }
 
-func (au AuthUsecase) DeleteUser(id uint) {
+func (au AuthUsecase) DeleteUser(id uint) error {
+	user := au.r.FindUserById(id)
+	if user.Id == 0 {
+		return fmt.Errorf("user is not exist")
+	}
 	au.r.DeleteUser(id)
+	return nil
 }

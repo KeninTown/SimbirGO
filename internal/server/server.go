@@ -43,20 +43,22 @@ func (s *Server) Run(ctx context.Context, uc authHandler.AuthUsecase, pu payment
 	//auth routes
 	ah := authHandler.New(uc)
 
+	//user auth routes
 	authRouts := s.router.Group("/", middleware.CheckAuthification())
-	authRouts.GET("/api/Account/Me", ah.MyAccount)
-	s.router.POST("/api/Account/SignIn", ah.SignIn)
-	s.router.POST("/api/Account/SignUp", ah.SignUp)
-	authRouts.POST("/api/Account/SignOut", ah.SignOut)
-	authRouts.PUT("/api/Account/Update", ah.Update)
+	authRouts.GET("/api/Account/Me", ah.UserMyAccount)
+	s.router.POST("/api/Account/SignIn", ah.UserSignIn)
+	s.router.POST("/api/Account/SignUp", ah.UserSignUp)
+	authRouts.POST("/api/Account/SignOut", ah.UserSignOut)
+	authRouts.PUT("/api/Account/Update", ah.UserUpdate)
 
 	//admin auth routes
-	adminAuthRouts := s.router.Group("/api/Admin/Account", middleware.CheckAuthification(), middleware.CheckAdminStatus())
-	adminAuthRouts.GET("/", ah.GetUsers)
-	adminAuthRouts.GET("/:id", ah.GetUser)
-	adminAuthRouts.POST("/", ah.CreateUser)
-	adminAuthRouts.PUT("/:id", ah.UpdateUser)
-	adminAuthRouts.DELETE("/:id", ah.DeleteUser)
+	adminAuthRouts := s.router.Group("/api/Admin/Account", middleware.CheckAuthification(),
+		middleware.CheckAdminStatus())
+	adminAuthRouts.GET("/", ah.AdminGetUsers)
+	adminAuthRouts.GET("/:id", ah.AdminGetUser)
+	adminAuthRouts.POST("/", ah.AdminCreateUser)
+	adminAuthRouts.PUT("/:id", ah.AdminUpdateUser)
+	adminAuthRouts.DELETE("/:id", ah.AdminDeleteUser)
 
 	//payment rout
 	ph := paymentHandler.New(pu)
@@ -65,29 +67,43 @@ func (s *Server) Run(ctx context.Context, uc authHandler.AuthUsecase, pu payment
 	//transport routes
 	th := transportHandler.New(tu)
 
-	s.router.GET("/api/Transport/:id", th.GetTransport)
-	transportAuthRoutes := s.router.Group("/api/Transport", middleware.CheckAuthification())
-	transportAuthRoutes.POST("/", th.CreateTransport)
-	transportAuthRoutes.PUT("/:id", th.UpdateTransport)
-	transportAuthRoutes.DELETE("/:id", th.DeleteUserTransport)
+	//user transport routes
+	s.router.GET("/api/Transport/:id", th.UserGetTransport)
+	transportAuthRoutes := s.router.Group("/api/Transport",
+		middleware.CheckAuthification())
+	transportAuthRoutes.POST("/", th.UserCreateTransport)
+	transportAuthRoutes.PUT("/:id", th.UserUpdateTransport)
+	transportAuthRoutes.DELETE("/:id", th.UserDeleteTransport)
 
-	//transport auth routes
-	transportAdminRoutes := s.router.Group("/api/Admin/Transport", middleware.CheckAuthification(), middleware.CheckAdminStatus())
+	//admin transport routes
+	transportAdminRoutes := s.router.Group("/api/Admin/Transport",
+		middleware.CheckAuthification(), middleware.CheckAdminStatus())
 	transportAdminRoutes.GET("/", th.AdminGetTransports)
 	transportAdminRoutes.GET("/:id", th.AdminGetTransport)
 	transportAdminRoutes.POST("/", th.AdminCreateTransport)
 	transportAdminRoutes.PUT("/:id", th.AdminUpdateTransport)
-	transportAdminRoutes.DELETE("/:id", th.DeleteTransport)
+	transportAdminRoutes.DELETE("/:id", th.AdminDeleteTransport)
 
 	//rent routes
 	rh := rentHandler.New(ru)
 
+	//user rent routes
 	s.router.GET("/api/Rent/Transport", rh.GetAvalibleTransport)
+	rentRouts := s.router.Group("/api/Rent", middleware.CheckAuthification())
+	rentRouts.GET("/:id", rh.UserGetRent)
+	rentRouts.GET("/MyHistory", rh.UserGetHistory)
+	rentRouts.GET("/TransportHistory/:id", rh.UserGetTransportHistory)
+	rentRouts.POST("/New/:id", rh.UserCreateNewRent)
+	rentRouts.POST("/End/:id", rh.UserEndRent)
 
 	//admin rent routes
-	rentsAdminRoutes := s.router.Group("/api/Admin", middleware.CheckAuthification(), middleware.CheckAdminStatus())
+	rentsAdminRoutes := s.router.Group("/api/Admin", middleware.CheckAuthification(),
+		middleware.CheckAdminStatus())
 	rentsAdminRoutes.GET("/Rent/:id", rh.AdminGetRent)
 	rentsAdminRoutes.POST("/Rent", rh.AdminCreateRent)
+	rentsAdminRoutes.POST("/Rent/End/:id", rh.AdminEndRent)
+	rentsAdminRoutes.PUT("/Rent/:id", rh.AdminUpdateRent)
+	rentsAdminRoutes.DELETE("/Rent/:id", rh.AdminDeleteRent)
 
 	srv := http.Server{
 		Addr:    s.addr,

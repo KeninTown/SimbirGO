@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  authHandler.CreateUser.userData:
+  authHandler.AdminCreateUser.userData:
     properties:
       balance:
         type: number
@@ -14,44 +14,44 @@ definitions:
     - password
     - username
     type: object
-  authHandler.SignIn.userCreadentials:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  authHandler.SignUp.userData:
-    properties:
-      isAdmin:
-        type: boolean
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  authHandler.Update.userData:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - password
-    - username
-    type: object
-  authHandler.UpdateUser.userData:
+  authHandler.AdminUpdateUser.userData:
     properties:
       balance:
         type: number
       isAdmin:
         type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  authHandler.UserSignIn.userCreadentials:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  authHandler.UserSignUp.userData:
+    properties:
+      isAdmin:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  authHandler.UserUpdate.userData:
+    properties:
       password:
         type: string
       username:
@@ -69,6 +69,9 @@ definitions:
       priceOfUnit:
         type: number
       priceType:
+        enum:
+        - Minutes
+        - ' Days'
         type: string
       timeEnd:
         type: string
@@ -104,6 +107,10 @@ definitions:
       ownerId:
         type: integer
       transportType:
+        enum:
+        - Car
+        - ' Scooter'
+        - ' Bike'
         type: string
     type: object
   entities.User:
@@ -129,6 +136,27 @@ definitions:
         type: string
     type: object
   rentHandler.AdminCreateRent.rentData:
+    properties:
+      priceOfUnit:
+        type: number
+      priceType:
+        type: string
+      timeEnd:
+        type: string
+      timeStart:
+        type: string
+      transportId:
+        type: integer
+      userId:
+        type: integer
+    required:
+    - priceOfUnit
+    - priceType
+    - timeStart
+    - transportId
+    - userId
+    type: object
+  rentHandler.AdminUpdateRent.rentData:
     properties:
       priceOfUnit:
         type: number
@@ -215,7 +243,7 @@ definitions:
     - ownerId
     - transportType
     type: object
-  transportHandler.CreateTransport.responseData:
+  transportHandler.UserCreateTransport.responseData:
     properties:
       canBeRented:
         type: boolean
@@ -247,7 +275,7 @@ definitions:
     - model
     - transportType
     type: object
-  transportHandler.CreateTransport.transportData:
+  transportHandler.UserCreateTransport.transportData:
     properties:
       canBeRented:
         type: boolean
@@ -277,7 +305,7 @@ definitions:
     - model
     - transportType
     type: object
-  transportHandler.GetTransport.transportData:
+  transportHandler.UserGetTransport.transportData:
     properties:
       canBeRented:
         type: boolean
@@ -307,7 +335,7 @@ definitions:
     - model
     - transportType
     type: object
-  transportHandler.UpdateTransport.responseData:
+  transportHandler.UserUpdateTransport.responseData:
     properties:
       canBeRented:
         type: boolean
@@ -339,7 +367,7 @@ definitions:
     - model
     - transportType
     type: object
-  transportHandler.UpdateTransport.transportData:
+  transportHandler.UserUpdateTransport.transportData:
     properties:
       canBeRented:
         type: boolean
@@ -401,7 +429,7 @@ paths:
       - ApiKeyAuth: []
       summary: Просмотр данных текущего аккаунта
       tags:
-      - 1. AccountController
+      - AccountController
   /api/Account/SignIn:
     post:
       consumes:
@@ -413,7 +441,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/authHandler.SignIn.userCreadentials'
+          $ref: '#/definitions/authHandler.UserSignIn.userCreadentials'
       produces:
       - application/json
       responses:
@@ -427,7 +455,7 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       summary: Вход в аккаунт
       tags:
-      - 1. AccountController
+      - AccountController
   /api/Account/SignOut:
     post:
       description: Удаление jwt токена из cookie access_token
@@ -446,7 +474,7 @@ paths:
       - ApiKeyAuth: []
       summary: Выход из аккаунта
       tags:
-      - 1. AccountController
+      - AccountController
   /api/Account/SignUp:
     post:
       consumes:
@@ -458,7 +486,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/authHandler.SignUp.userData'
+          $ref: '#/definitions/authHandler.UserSignUp.userData'
       produces:
       - application/json
       responses:
@@ -472,7 +500,7 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       summary: Регистрация
       tags:
-      - 1. AccountController
+      - AccountController
   /api/Account/Update:
     put:
       consumes:
@@ -484,14 +512,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/authHandler.Update.userData'
+          $ref: '#/definitions/authHandler.UserUpdate.userData'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/authHandler.Update.userData'
+            $ref: '#/definitions/authHandler.UserUpdate.userData'
         "400":
           description: Bad Request
           schema:
@@ -504,7 +532,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных аккаунта
       tags:
-      - 1. AccountController
+      - AccountController
   /api/Admin/Account:
     get:
       description: Получение данных count пользователей начиная с id = start
@@ -544,7 +572,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение данных пользователей
       tags:
-      - 2. AdminAccountController
+      - AdminAccountController
     post:
       consumes:
       - application/json
@@ -555,7 +583,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/authHandler.CreateUser.userData'
+          $ref: '#/definitions/authHandler.AdminCreateUser.userData'
       produces:
       - application/json
       responses:
@@ -579,7 +607,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создание нового пользователя
       tags:
-      - 2. AdminAccountController
+      - AdminAccountController
   /api/Admin/Account/{id}:
     delete:
       description: Обновление данных пользователя с id={id}
@@ -610,7 +638,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - 2. AdminAccountController
+      - AdminAccountController
     get:
       description: Получение пользователя с id = {id}
       parameters:
@@ -642,7 +670,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение пользователя
       tags:
-      - 2. AdminAccountController
+      - AdminAccountController
     put:
       consumes:
       - application/json
@@ -658,7 +686,7 @@ paths:
         name: requset
         required: true
         schema:
-          $ref: '#/definitions/authHandler.UpdateUser.userData'
+          $ref: '#/definitions/authHandler.AdminUpdateUser.userData'
       produces:
       - application/json
       responses:
@@ -682,14 +710,15 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - 2. AdminAccountController
+      - AdminAccountController
   /api/Admin/Rent:
     post:
       consumes:
       - application/json
-      description: Аредна транспорта с id = transportId пользователем с id = userId
+      description: Создание аренды транспорта с id = transportId пользователем с id
+        = userId
       parameters:
-      - description: rent data
+      - description: Rent data
         in: body
         name: request
         required: true
@@ -716,18 +745,91 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Создание аренды
+      summary: Создание новой аренды
       tags:
       - AdminRentController
-  /api/Admin/Rent/{id}:
-    get:
+  /api/Admin/Rent/{rentId}:
+    delete:
+      description: Удаление аренды с id = {rentId}
+      parameters:
+      - description: Rent id
+        in: path
+        name: rentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Удаление аренды
+      tags:
+      - AdminRentController
+    put:
       consumes:
       - application/json
-      description: Получение аренды с id = {id}
+      description: |-
+        Обновление аренды с id = {rentId}
+        Если в обновлении аренды указывается дата ее окончания, то аренда считается завершенной.
+        Происходит рассчет итоговой суммы аренды и если она оказывается больше,
+        чем сумма на счете пользователя, то в обновить аренду нельзя.
       parameters:
-      - description: Transport id
+      - description: Rent data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/rentHandler.AdminUpdateRent.rentData'
+      - description: Rent id
         in: path
-        name: id
+        name: rentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Rent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Обновление аренды
+      tags:
+      - AdminRentController
+  /api/Admin/Rent/{rentid}:
+    get:
+      description: Получение аренды с id = {rentid}
+      parameters:
+      - description: Rent id
+        in: path
+        name: rentid
         required: true
         type: integer
       produces:
@@ -752,6 +854,42 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Получение аренды
+      tags:
+      - AdminRentController
+  /api/Admin/Rent/End/{rentId}:
+    post:
+      description: |-
+        Завершение аренды транспорта с id = {rentId}.
+        Происходит рассчет итоговой суммы аренды и если она оказывается больше,
+        чем сумма на счете пользователя, то в завершить аренду нельзя.
+      parameters:
+      - description: Rent id
+        in: path
+        name: rentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Rent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Завершение аренды
       tags:
       - AdminRentController
   /api/Admin/Transport:
@@ -799,7 +937,7 @@ paths:
       - ApiKeyAuth: []
       summary: Информация о транспортных средствах
       tags:
-      - 5. AdminTransportController
+      - AdminTransportController
     post:
       consumes:
       - application/json
@@ -834,7 +972,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создание транспортного средства
       tags:
-      - 5. AdminTransportController
+      - AdminTransportController
   /api/Admin/Transport/{id}:
     delete:
       description: Удаление транспортного средства с id = {id}
@@ -863,7 +1001,7 @@ paths:
       - ApiKeyAuth: []
       summary: Удаление транспортного средства
       tags:
-      - 5. AdminTransportController
+      - AdminTransportController
     get:
       description: Получение информации о транспортном средстве с id = {id}
       parameters:
@@ -895,7 +1033,7 @@ paths:
       - ApiKeyAuth: []
       summary: Информация о транспортном средстве
       tags:
-      - 5. AdminTransportController
+      - AdminTransportController
     put:
       consumes:
       - application/json
@@ -935,7 +1073,77 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление транспортного средства
       tags:
-      - 5. AdminTransportController
+      - AdminTransportController
+  /api/Admin/TransportHistory/{transportId}:
+    get:
+      description: Получение истории всех аренд пользователем с id = {transportId}
+      parameters:
+      - description: Transport id
+        in: path
+        name: transportId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Rent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение аренды
+      tags:
+      - AdminRentController
+  /api/Admin/UserHistory/{userid}:
+    get:
+      description: Получение истории всех аренд пользователем с id = {userid}
+      parameters:
+      - description: User id
+        in: path
+        name: userid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Rent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение аренды
+      tags:
+      - AdminRentController
   /api/Payment/Hesoyam/{id}:
     post:
       description: Добавляет на баланс пользователся с id = {id} 250 000. Администраторы
@@ -965,7 +1173,140 @@ paths:
       - ApiKeyAuth: []
       summary: Пополнение баланса
       tags:
-      - 3. PaymentController
+      - PaymentController
+  /api/Rent/{rentid}:
+    get:
+      description: Получение данных аренды с id = {rentid}. Данные могут получить
+        только арендатор и арендодатель.
+      parameters:
+      - description: Rent id
+        in: path
+        name: rentid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Rent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение аренды пользователя
+      tags:
+      - RentController
+  /api/Rent/End/{rentId}:
+    post:
+      description: |-
+        Окончание аренды транспорта с id = {transportid}.
+        Происходит рассчет итоговой суммы аренды и если она оказывается больше,
+        чем сумма на счете пользователя, то в завершить аренду нельзя.
+      parameters:
+      - description: Transport id
+        in: path
+        name: rentId
+        required: true
+        type: integer
+      - description: lat
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: long
+        in: query
+        name: long
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Rent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Окончание аренды
+      tags:
+      - RentController
+  /api/Rent/MyHistory:
+    get:
+      description: Получение истории всех аренд пользователя
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Rent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение истории аредны пользователя
+      tags:
+      - RentController
+  /api/Rent/New/{transportId}:
+    post:
+      description: |-
+        Создание новой аредны транспорта с id = {transportid}.
+        В параметра rentType указывается тип аренды: [Minutes, Days].
+      parameters:
+      - description: Transport id
+        in: path
+        name: transportId
+        required: true
+        type: integer
+      - description: 'Rent type: [Minutes, Days]'
+        in: query
+        name: rentType
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Rent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Новая аренда транспорта
+      tags:
+      - RentController
   /api/Rent/Transport:
     get:
       description: Получение транспорта доступного для аренды по параметрам его расположения
@@ -1004,9 +1345,40 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
+      summary: Транспорт для аренды
+      tags:
+      - RentController
+  /api/Rent/TransportHistory/{transportId}:
+    get:
+      description: |-
+        Получение истории всех аренд транспорта с id = {transportId}.
+        Данные может получить только владелец транспорта.
+      parameters:
+      - description: Transport id
+        in: path
+        name: transportId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Rent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Транспорт для аренды
+      summary: Получение истории аредны транспорта
       tags:
       - RentController
   /api/Transport:
@@ -1020,14 +1392,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/transportHandler.CreateTransport.transportData'
+          $ref: '#/definitions/transportHandler.UserCreateTransport.transportData'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/transportHandler.CreateTransport.responseData'
+            $ref: '#/definitions/transportHandler.UserCreateTransport.responseData'
         "400":
           description: Bad Request
           schema:
@@ -1040,7 +1412,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создаение транспорта
       tags:
-      - 4. TransportController
+      - TransportController
   /api/Transport/{id}:
     delete:
       description: Удаление транспорта с id = {id} если данные транспорт принадлежит
@@ -1066,7 +1438,7 @@ paths:
       - ApiKeyAuth: []
       summary: Удаление транспорта
       tags:
-      - 4. TransportController
+      - TransportController
     get:
       description: Просмотр информации о транспорте с id = {id}
       parameters:
@@ -1081,14 +1453,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/transportHandler.GetTransport.transportData'
+            $ref: '#/definitions/transportHandler.UserGetTransport.transportData'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
       summary: Получение информации о транспотре
       tags:
-      - 4. TransportController
+      - TransportController
     put:
       consumes:
       - application/json
@@ -1104,14 +1476,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/transportHandler.UpdateTransport.transportData'
+          $ref: '#/definitions/transportHandler.UserUpdateTransport.transportData'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/transportHandler.UpdateTransport.responseData'
+            $ref: '#/definitions/transportHandler.UserUpdateTransport.responseData'
         "400":
           description: Bad Request
           schema:
@@ -1124,7 +1496,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление информации о транспотре
       tags:
-      - 4. TransportController
+      - TransportController
 securityDefinitions:
   ApiKeyAuth:
     in: header

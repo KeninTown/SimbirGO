@@ -11,6 +11,6 @@ type Rent struct {
 	TimeStart   time.Time  `json:"timeStart"`
 	TimeEnd     *time.Time `json:"timeEnd"`
 	PriceOfUnit float64    `json:"priceOfUnit"`
-	PriceType   string     `json:"priceType"`
+	PriceType   string     `json:"priceType" enums:"Minutes, Days"`
 	FinalPrice  float64    `json:"finalPrice"`
 }
