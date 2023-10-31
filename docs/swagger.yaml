@@ -204,8 +204,6 @@ definitions:
     required:
     - color
     - identifier
-    - latitude
-    - longitude
     - model
     - ownerId
     - transportType
@@ -237,8 +235,6 @@ definitions:
     required:
     - color
     - identifier
-    - latitude
-    - longitude
     - model
     - ownerId
     - transportType
@@ -434,7 +430,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Вход в аккаунт и установление в cookie jwt токена авторизации
+      description: Вход в аккаунт пользователя с использованием имени пользователя
+        - username и паролем - password и получение jwt
       parameters:
       - description: User credentials
         in: body
@@ -458,7 +455,8 @@ paths:
       - AccountController
   /api/Account/SignOut:
     post:
-      description: Удаление jwt токена из cookie access_token
+      description: Внесение текущего используемого токена доступа в черный список
+        токенов
       responses:
         "200":
           description: OK
@@ -479,7 +477,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Регистрация и установление jwt токена в cookie access_token
+      description: Регистрация пользовате и получение jwt
       parameters:
       - description: User data
         in: body
@@ -505,7 +503,9 @@ paths:
     put:
       consumes:
       - application/json
-      description: Проверка входящих данных и обновление данных аккаунта
+      description: |-
+        Обновление данных аккаунта username и password.
+        При смене одного из данных параметров требуется указать текущее значение другого параметра.
       parameters:
       - description: User data
         in: body
@@ -535,7 +535,8 @@ paths:
       - AccountController
   /api/Admin/Account:
     get:
-      description: Получение данных count пользователей начиная с id = start
+      description: Возращает информацию о count аккаунтах пользователей начиная с
+        id = start
       parameters:
       - description: start
         in: query
@@ -572,7 +573,7 @@ paths:
       - ApiKeyAuth: []
       summary: Получение данных пользователей
       tags:
-      - AccountControllerAdmin
+      - AdminAccountController
     post:
       consumes:
       - application/json
@@ -607,10 +608,10 @@ paths:
       - ApiKeyAuth: []
       summary: Создание нового пользователя
       tags:
-      - AccountControllerAdmin
+      - AdminAccountController
   /api/Admin/Account/{id}:
     delete:
-      description: Обновление данных пользователя с id={id}
+      description: Удаление данных пользователя с id={id}
       parameters:
       - description: Account id
         in: path
@@ -620,8 +621,6 @@ paths:
       responses:
         "200":
           description: OK
-          schema:
-            $ref: '#/definitions/entities.User'
         "400":
           description: Bad Request
           schema:
@@ -636,11 +635,11 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Обновление данных пользователя
+      summary: Удаление пользователя
       tags:
-      - AccountControllerAdmin
+      - AdminAccountController
     get:
-      description: Получение пользователя с id = {id}
+      description: Возвращает информацию о пользователе с id = {id}
       parameters:
       - description: Account id
         in: path
@@ -668,9 +667,9 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Получение пользователя
+      summary: Получение информации о пользователе
       tags:
-      - AccountControllerAdmin
+      - AdminAccountController
     put:
       consumes:
       - application/json
@@ -710,7 +709,7 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление данных пользователя
       tags:
-      - AccountControllerAdmin
+      - AdminAccountController
   /api/Admin/Rent:
     post:
       consumes:
@@ -747,7 +746,7 @@ paths:
       - ApiKeyAuth: []
       summary: Создание новой аренды
       tags:
-      - RentControllerAdmin
+      - AdminRentController
   /api/Admin/Rent/{rentId}:
     delete:
       description: Удаление аренды с id = {rentId}
@@ -778,15 +777,46 @@ paths:
       - ApiKeyAuth: []
       summary: Удаление аренды
       tags:
-      - RentControllerAdmin
+      - AdminRentController
+    get:
+      description: Получение информации об аренде с id = {rentId}
+      parameters:
+      - description: Rent id
+        in: path
+        name: rentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Rent'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/httpUtil.ResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Информации об аренде
+      tags:
+      - AdminRentController
     put:
       consumes:
       - application/json
       description: |-
-        Обновление аренды с id = {rentId}
+        Обновление информации об аренде с id = {rentId}
         Если в обновлении аренды указывается дата ее окончания, то аренда считается завершенной.
-        Происходит рассчет итоговой суммы аренды и если она оказывается больше,
-        чем сумма на счете пользователя, то в обновить аренду нельзя.
+        Происходит рассчет итоговой суммы аренды и если она оказывается больше, чем сумма на счете пользователя, то обновить аренду нельзя.
       parameters:
       - description: Rent data
         in: body
@@ -822,47 +852,23 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление аренды
       tags:
-      - RentControllerAdmin
-  /api/Admin/Rent/{rentid}:
-    get:
-      description: Получение аренды с id = {rentid}
-      parameters:
-      - description: Rent id
-        in: path
-        name: rentid
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.Rent'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httpUtil.ResponseError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/httpUtil.ResponseError'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/httpUtil.ResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Получение аренды
-      tags:
-      - RentControllerAdmin
+      - AdminRentController
   /api/Admin/Rent/End/{rentId}:
     post:
       description: |-
-        Завершение аренды транспорта с id = {rentId}.
-        Происходит рассчет итоговой суммы аренды и если она оказывается больше,
-        чем сумма на счете пользователя, то в завершить аренду нельзя.
+        Завершение аренды с id = {rentId}.
+        Происходит рассчет итоговой суммы аренды и если она оказывается больше, чем сумма на счете пользователя, то в завершить аренду нельзя.
       parameters:
+      - description: lat
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: long
+        in: query
+        name: long
+        required: true
+        type: number
       - description: Rent id
         in: path
         name: rentId
@@ -891,10 +897,10 @@ paths:
       - ApiKeyAuth: []
       summary: Завершение аренды
       tags:
-      - RentControllerAdmin
+      - AdminRentController
   /api/Admin/Transport:
     get:
-      description: Получение count транспортных средств с id >= start с типом транспорта
+      description: Получение count транспортных средств с id >= start и с типом транспорта
         transportType
       parameters:
       - description: start
@@ -908,6 +914,10 @@ paths:
         required: true
         type: integer
       - description: transportType
+        enum:
+        - Car
+        - Bike
+        - Scooter
         in: query
         name: transportType
         required: true
@@ -937,11 +947,12 @@ paths:
       - ApiKeyAuth: []
       summary: Информация о транспортных средствах
       tags:
-      - TransportControllerAdmin
+      - AdminTransportController
     post:
       consumes:
       - application/json
-      description: Создание транспортного средства указывая пользователя с id = ownerId
+      description: Создание транспортного средства. При создании указывается id владельца
+        транспортного средства - ownerId
       parameters:
       - description: Transport data
         in: body
@@ -972,10 +983,10 @@ paths:
       - ApiKeyAuth: []
       summary: Создание транспортного средства
       tags:
-      - TransportControllerAdmin
+      - AdminTransportController
   /api/Admin/Transport/{id}:
     delete:
-      description: Удаление транспортного средства с id = {id}
+      description: Удаление информации о транспортном средстве с id = {id}
       parameters:
       - description: Transport id
         in: path
@@ -1001,7 +1012,7 @@ paths:
       - ApiKeyAuth: []
       summary: Удаление транспортного средства
       tags:
-      - TransportControllerAdmin
+      - AdminTransportController
     get:
       description: Получение информации о транспортном средстве с id = {id}
       parameters:
@@ -1033,11 +1044,11 @@ paths:
       - ApiKeyAuth: []
       summary: Информация о транспортном средстве
       tags:
-      - TransportControllerAdmin
+      - AdminTransportController
     put:
       consumes:
       - application/json
-      description: Обновление транспортного средства с id = {id}
+      description: Обновление информации о транспортном средстве с id = {id}
       parameters:
       - description: Transport id
         in: path
@@ -1073,10 +1084,10 @@ paths:
       - ApiKeyAuth: []
       summary: Обновление транспортного средства
       tags:
-      - TransportControllerAdmin
+      - AdminTransportController
   /api/Admin/TransportHistory/{transportId}:
     get:
-      description: Получение истории всех аренд пользователем с id = {transportId}
+      description: Получение информации обо всех арендах транспорта с id = {transportId}
       parameters:
       - description: Transport id
         in: path
@@ -1106,16 +1117,16 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Получение аренды
+      summary: История аренды транспорта
       tags:
-      - RentControllerAdmin
-  /api/Admin/UserHistory/{userid}:
+      - AdminRentController
+  /api/Admin/UserHistory/{userId}:
     get:
-      description: Получение истории всех аренд пользователем с id = {userid}
+      description: Получение информации обо всех арендах пользователем с id = {userId}
       parameters:
       - description: User id
         in: path
-        name: userid
+        name: userId
         required: true
         type: integer
       produces:
@@ -1141,13 +1152,14 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Получение аренды
+      summary: История аренды пользователя
       tags:
-      - RentControllerAdmin
+      - AdminRentController
   /api/Payment/Hesoyam/{id}:
     post:
-      description: Добавляет на баланс пользователся с id = {id} 250 000. Администраторы
-        могут изменять баланс любому пользователю, обычные пользователи только себе
+      description: |-
+        Пополняет баланс пользователся с id = {id} на 250 000.
+        Администраторы могут пополнять баланс любому пользователю, обычные пользователи только себе.
       parameters:
       - description: Account id
         in: path
@@ -1208,8 +1220,7 @@ paths:
     post:
       description: |-
         Окончание аренды транспорта с id = {transportid}.
-        Происходит рассчет итоговой суммы аренды и если она оказывается больше,
-        чем сумма на счете пользователя, то в завершить аренду нельзя.
+        Происходит рассчет итоговой суммы аренды и если она оказывается больше, чем сумма на счете пользователя, то в завершить аренду нельзя.
       parameters:
       - description: Transport id
         in: path
@@ -1248,7 +1259,7 @@ paths:
       - RentController
   /api/Rent/MyHistory:
     get:
-      description: Получение истории всех аренд пользователя
+      description: Получение данных всех аренд текущего авторизованного пользователя
       produces:
       - application/json
       responses:
@@ -1268,7 +1279,7 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Получение истории аредны пользователя
+      summary: Истории аренды пользователя
       tags:
       - RentController
   /api/Rent/New/{transportId}:
@@ -1283,6 +1294,9 @@ paths:
         required: true
         type: integer
       - description: 'Rent type: [Minutes, Days]'
+        enum:
+        - Minutes
+        - Days
         in: query
         name: rentType
         required: true
@@ -1304,30 +1318,35 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Новая аренда транспорта
+      summary: Создание новой аренды транспорта
       tags:
       - RentController
   /api/Rent/Transport:
     get:
-      description: Получение транспорта доступного для аренды по параметрам его расположения
-        и типу транспорта
+      description: Получение информации о транспорте, доступного для аренды по месту
+        его расположения и типу.
       parameters:
-      - description: lat
+      - description: географическая широта
         in: query
         name: lat
         required: true
         type: number
-      - description: radius
+      - description: радиус поиска
         in: query
         name: radius
         required: true
         type: number
-      - description: long
+      - description: географическая долгота
         in: query
         name: long
         required: true
         type: number
       - description: transportType
+        enum:
+        - All
+        - Car
+        - Bike
+        - Scooter
         in: query
         name: transportType
         required: true
@@ -1345,13 +1364,13 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/httpUtil.ResponseError'
-      summary: Транспорт для аренды
+      summary: Доступный транспорт для аренды
       tags:
       - RentController
   /api/Rent/TransportHistory/{transportId}:
     get:
       description: |-
-        Получение истории всех аренд транспорта с id = {transportId}.
+        Получение данных обо всех арендах транспорта с id = {transportId}.
         Данные может получить только владелец транспорта.
       parameters:
       - description: Transport id
@@ -1378,14 +1397,14 @@ paths:
             $ref: '#/definitions/httpUtil.ResponseError'
       security:
       - ApiKeyAuth: []
-      summary: Получение истории аредны транспорта
+      summary: Истории аренды транспорта
       tags:
       - RentController
   /api/Transport:
     post:
       consumes:
       - application/json
-      description: Создает транспорт у текущего авторизованного пользователя
+      description: Создание транспорта у текущего авторизованного пользователя
       parameters:
       - description: Transport data
         in: body
@@ -1415,8 +1434,8 @@ paths:
       - TransportController
   /api/Transport/{id}:
     delete:
-      description: Удаление транспорта с id = {id} если данные транспорт принадлежит
-        текущему авторизованному пользователю
+      description: Удаление транспорта с id = {id}. Удалить данные о транспорте может
+        только владелец транспорта.
       parameters:
       - description: Transport id
         in: path

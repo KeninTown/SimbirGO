@@ -48,7 +48,7 @@ func (ah AuthHandlers) UserMyAccount(ctx *gin.Context) {
 	id := ctx.GetUint("id")
 	user, err := ah.uc.MyAccount(id)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	ctx.JSON(http.StatusOK, user)
@@ -56,7 +56,7 @@ func (ah AuthHandlers) UserMyAccount(ctx *gin.Context) {
 
 // @Summary Вход в аккаунт
 // @Tags AccountController
-// @Description Вход в аккаунт и установление в cookie jwt токена авторизации
+// @Description Вход в аккаунт пользователя с использованием имени пользователя - username и паролем - password и получение jwt
 // @Accept json
 // @Produce  json
 // @Param request body authHandler.UserSignIn.userCreadentials true "User credentials"
@@ -70,14 +70,14 @@ func (ah AuthHandlers) UserSignIn(ctx *gin.Context) {
 	}
 	userCred := userCreadentials{}
 	if err := ctx.BindJSON(&userCred); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
 	user := entities.User{Username: userCred.Username, Password: userCred.Password}
 	token, err := ah.uc.SignIn(user)
 	if err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	ctx.SetCookie("access_token", token, 3600, "/", "localhost", false, true)
@@ -86,7 +86,7 @@ func (ah AuthHandlers) UserSignIn(ctx *gin.Context) {
 
 // @Summary Регистрация
 // @Tags AccountController
-// @Description Регистрация и установление jwt токена в cookie access_token
+// @Description Регистрация пользовате и получение jwt
 // @Accept json
 // @Produce  json
 // @Param request body authHandler.UserSignUp.userData true "User data"
@@ -101,7 +101,7 @@ func (ah AuthHandlers) UserSignUp(ctx *gin.Context) {
 	}
 	var usData userData
 	if err := ctx.BindJSON(&usData); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	user := entities.User{
@@ -112,7 +112,7 @@ func (ah AuthHandlers) UserSignUp(ctx *gin.Context) {
 
 	user, token, err := ah.uc.SignUp(user)
 	if err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	ctx.SetCookie("access_token", token, 360000, "/", "localhost", false, true)
@@ -121,7 +121,7 @@ func (ah AuthHandlers) UserSignUp(ctx *gin.Context) {
 
 // @Summary Выход из аккаунта
 // @Tags AccountController
-// @Description Удаление jwt токена из cookie access_token
+// @Description Внесение текущего используемого токена доступа в черный список токенов
 // @Security ApiKeyAuth
 // @Success 200
 // @Failure 400 {object} httpUtil.ResponseError
@@ -135,7 +135,8 @@ func (ah AuthHandlers) UserSignOut(ctx *gin.Context) {
 
 // @Summary Обновление данных аккаунта
 // @Tags AccountController
-// @Description Проверка входящих данных и обновление данных аккаунта
+// @Description Обновление данных аккаунта username и password.
+// @Description При смене одного из данных параметров требуется указать текущее значение другого параметра.
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
@@ -152,7 +153,7 @@ func (ah AuthHandlers) UserUpdate(ctx *gin.Context) {
 	var data userData
 
 	if err := ctx.BindJSON(&data); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid data"})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	id := ctx.GetUint("id")
@@ -163,7 +164,7 @@ func (ah AuthHandlers) UserUpdate(ctx *gin.Context) {
 	}
 	user, err := ah.uc.Update(user)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	ctx.JSON(http.StatusOK, userData{
@@ -175,8 +176,8 @@ func (ah AuthHandlers) UserUpdate(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Получение данных пользователей
-// @Tags AccountControllerAdmin
-// @Description Получение данных count пользователей начиная с id = start
+// @Tags AdminAccountController
+// @Description Возращает информацию о count аккаунтах пользователей начиная с id = start
 // @Security ApiKeyAuth
 // @Produce json
 // @Param start query uint true "start"
@@ -191,13 +192,13 @@ func (ah AuthHandlers) AdminGetUsers(ctx *gin.Context) {
 	countStr := ctx.Query("count")
 	start, err := strconv.Atoi(startStr)
 	if err != nil || start < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of start query param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of start query param")
 		return
 	}
 
 	count, err := strconv.Atoi(countStr)
 	if err != nil || count < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of count query param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of count query param")
 		return
 	}
 
@@ -206,9 +207,9 @@ func (ah AuthHandlers) AdminGetUsers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, users)
 }
 
-// @Summary Получение пользователя
-// @Tags AccountControllerAdmin
-// @Description Получение пользователя с id = {id}
+// @Summary Получение информации о пользователе
+// @Tags AdminAccountController
+// @Description Возвращает информацию о пользователе с id = {id}
 // @Security ApiKeyAuth
 // @Produce json
 // @Param id path uint true "Account id"
@@ -221,19 +222,19 @@ func (ah AuthHandlers) AdminGetUser(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of id param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of id param")
 		return
 	}
 	user, err := ah.uc.MyAccount(uint(id))
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	ctx.JSON(http.StatusOK, user)
 }
 
 // @Summary Создание нового пользователя
-// @Tags AccountControllerAdmin
+// @Tags AdminAccountController
 // @Description Создание нового пользователя с указанными данными
 // @Security ApiKeyAuth
 // @Accept json
@@ -254,7 +255,7 @@ func (ah AuthHandlers) AdminCreateUser(ctx *gin.Context) {
 
 	var usrData userData
 	if err := ctx.BindJSON(&usrData); err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
@@ -267,7 +268,7 @@ func (ah AuthHandlers) AdminCreateUser(ctx *gin.Context) {
 
 	user, err := ah.uc.CreateUser(user)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
@@ -275,7 +276,7 @@ func (ah AuthHandlers) AdminCreateUser(ctx *gin.Context) {
 }
 
 // @Summary Обновление данных пользователя
-// @Tags AccountControllerAdmin
+// @Tags AdminAccountController
 // @Description Обновление данных пользователя с id={id}
 // @Security ApiKeyAuth
 // @Accept json
@@ -291,7 +292,7 @@ func (ah AuthHandlers) AdminUpdateUser(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of id param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of id param")
 		return
 	}
 	type userData struct {
@@ -302,7 +303,7 @@ func (ah AuthHandlers) AdminUpdateUser(ctx *gin.Context) {
 	}
 	var usrData userData
 	if err := ctx.BindJSON(&usrData); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid data"})
+		httpUtil.NewResponseError(ctx, 400, "invalid data")
 		return
 	}
 
@@ -316,18 +317,18 @@ func (ah AuthHandlers) AdminUpdateUser(ctx *gin.Context) {
 
 	user, err = ah.uc.UpdateUser(user)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	ctx.JSON(http.StatusOK, user)
 }
 
-// @Summary Обновление данных пользователя
-// @Tags AccountControllerAdmin
-// @Description Обновление данных пользователя с id={id}
+// @Summary Удаление пользователя
+// @Tags AdminAccountController
+// @Description Удаление данных пользователя с id={id}
 // @Security ApiKeyAuth
 // @Param id path uint true "Account id"
-// @Success 200 {object} entities.User
+// @Success 200
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
 // @Failure 403 {object} httpUtil.ResponseError
@@ -336,13 +337,13 @@ func (ah AuthHandlers) AdminDeleteUser(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of id param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of id param")
 		return
 	}
 
 	err = ah.uc.DeleteUser(uint(id))
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 

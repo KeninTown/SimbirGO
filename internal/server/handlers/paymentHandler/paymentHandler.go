@@ -22,7 +22,8 @@ func New(pu PaymentUsecase) PaymentHandler {
 
 // @Summary Пополнение баланса
 // @Tags PaymentController
-// @Description Добавляет на баланс пользователся с id = {id} 250 000. Администраторы могут изменять баланс любому пользователю, обычные пользователи только себе
+// @Description Пополняет баланс пользователся с id = {id} на 250 000.
+// @Description Администраторы могут пополнять баланс любому пользователю, обычные пользователи только себе.
 // @Security ApiKeyAuth
 // @Param id path uint true "Account id"
 // @Success 200
@@ -41,7 +42,7 @@ func (ph PaymentHandler) IncreaseBalance(ctx *gin.Context) {
 	isAdmin := ctx.GetBool("isAdmin")
 	code, err := ph.pu.IncreaseBalance(uint(balanceId), userId, isAdmin)
 	if err != nil {
-		httpUtil.NewResponseError(ctx, code, err)
+		httpUtil.NewResponseError(ctx, code, err.Error())
 		return
 	}
 

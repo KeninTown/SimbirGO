@@ -68,17 +68,17 @@ func (ru RentUsecase) GetRent(rentId int, userId uint) (entities.Rent, error) {
 	if userId != rentModel.UserId && userId != transport.OwnerId {
 		return entities.Rent{}, fmt.Errorf("rent is not exist")
 	}
-	rentType := ru.r.FindRentTypeById(rentModel.PriceTypeId)
+	rentType := ru.r.FindRentTypeById(rentModel.RentTypeId)
 
 	return dto.RentModelToEntitie(rentModel, rentType), nil
 }
 
-func (ru RentUsecase) GetUserHistory(userId int) []entities.Rent {
-	rentModels := ru.r.FindUserRents(userId)
+func (ru RentUsecase) GetUserHistory(userId uint) []entities.Rent {
+	rentModels := ru.r.FindUserRents(int(userId))
 
 	rentEntites := make([]entities.Rent, 0, len(rentModels))
 	for _, rent := range rentModels {
-		rentType := ru.r.FindRentTypeById(rent.PriceTypeId)
+		rentType := ru.r.FindRentTypeById(rent.RentTypeId)
 		rentEntites = append(rentEntites, dto.RentModelToEntitie(rent, rentType))
 	}
 
@@ -98,21 +98,28 @@ func (ru RentUsecase) GetTransportHistory(userId, transportId int) ([]entities.R
 
 	rentEntites := make([]entities.Rent, 0, len(rentModels))
 	for _, rent := range rentModels {
-		rentType := ru.r.FindRentTypeById(rent.PriceTypeId)
+		rentType := ru.r.FindRentTypeById(rent.RentTypeId)
 		rentEntites = append(rentEntites, dto.RentModelToEntitie(rent, rentType))
 	}
 
 	return rentEntites, nil
 }
 
-func (ru RentUsecase) CreateNewRent(userId, transportId int, rentType string) (entities.Rent, error) {
+func (ru RentUsecase) CreateNewRent(userId uint, transportId int, rentType string) (entities.Rent, error) {
 	rentTypeId := ru.r.FindRentTypeByName(rentType)
+	if rentTypeId == 0 {
+		return entities.Rent{}, fmt.Errorf("type id is not exist")
+	}
 	transport := ru.r.FindTranspot(uint(transportId))
 	if transport.Id == 0 {
 		return entities.Rent{}, fmt.Errorf("transport is not exist")
 	}
 
-	if userId == int(transport.OwnerId) {
+	if !transport.CanBeRented {
+		return entities.Rent{}, fmt.Errorf("transport can not be rented")
+	}
+
+	if userId == transport.OwnerId {
 		return entities.Rent{}, fmt.Errorf("you can not rent own transport")
 	}
 
@@ -135,21 +142,24 @@ func (ru RentUsecase) CreateNewRent(userId, transportId int, rentType string) (e
 	}
 
 	rent := models.Rent{
-		UserId:      uint(userId),
+		UserId:      userId,
 		TransportId: uint(transportId),
 		TimeStart:   time.Now(),
 		PriceOfUnit: priceOfUnit,
-		PriceTypeId: rentTypeId,
+		RentTypeId:  rentTypeId,
 	}
+	transport.CanBeRented = false
+	ru.r.SaveTransport(transport)
+	rent = ru.r.CreateRent(rent)
 
-	ru.r.SaveRent(rent)
-
+	fmt.Printf("%+v", rent)
+	fmt.Printf("%+v", dto.RentModelToEntitie(rent, rentType))
 	return dto.RentModelToEntitie(rent, rentType), nil
 }
 
-func (ru RentUsecase) UserEndRent(userId, rentId int, lat, long float64) (entities.Rent, error) {
+func (ru RentUsecase) UserEndRent(userId uint, rentId int, lat, long float64) (entities.Rent, error) {
 	rentModel := ru.r.FindRentById(rentId)
-	if rentModel.Id == 0 || rentModel.UserId != uint(userId) {
+	if rentModel.Id == 0 || rentModel.UserId != userId {
 		return entities.Rent{}, fmt.Errorf("rent is not exist")
 	}
 
@@ -162,7 +172,7 @@ func (ru RentUsecase) UserEndRent(userId, rentId int, lat, long float64) (entiti
 	t := time.Now()
 	rentModel.TimeEnd = &t
 
-	rentType := ru.r.FindRentTypeById(rentModel.PriceTypeId)
+	rentType := ru.r.FindRentTypeById(rentModel.RentTypeId)
 	switch rentType {
 	case "Minutes":
 		rentModel.FinalPrice = ru.calculateRentPrice(rentModel.TimeStart.Unix(),
@@ -191,7 +201,7 @@ func (ru RentUsecase) AdminGetRent(id int) (entities.Rent, error) {
 	if rent.Id == 0 {
 		return entities.Rent{}, fmt.Errorf("rent is not exist")
 	}
-	rentType := ru.r.FindRentTypeById(rent.PriceTypeId)
+	rentType := ru.r.FindRentTypeById(rent.RentTypeId)
 
 	return dto.RentModelToEntitie(rent, rentType), nil
 }
@@ -201,7 +211,7 @@ func (ru RentUsecase) AdminGetUserHistory(userId int) ([]entities.Rent, error) {
 	if user.Id == 0 {
 		return nil, fmt.Errorf("user is not exist")
 	}
-	rentEntites := ru.GetUserHistory(userId)
+	rentEntites := ru.GetUserHistory(uint(userId))
 
 	return rentEntites, nil
 }
@@ -217,7 +227,7 @@ func (ru RentUsecase) AdminGetTransportHistory(transportId int) ([]entities.Rent
 
 	rentEntites := make([]entities.Rent, 0, len(rentModels))
 	for _, rent := range rentModels {
-		rentType := ru.r.FindRentTypeById(rent.PriceTypeId)
+		rentType := ru.r.FindRentTypeById(rent.RentTypeId)
 		rentEntites = append(rentEntites, dto.RentModelToEntitie(rent, rentType))
 	}
 
@@ -239,7 +249,6 @@ func (ru RentUsecase) AdminCreateRent(rent entities.Rent) (entities.Rent, error)
 		return entities.Rent{}, fmt.Errorf("transport can not be rented")
 	}
 	transport.CanBeRented = false
-	ru.r.SaveTransport(transport)
 
 	if rent.TimeEnd != nil {
 		switch rent.PriceType {
@@ -252,9 +261,16 @@ func (ru RentUsecase) AdminCreateRent(rent entities.Rent) (entities.Rent, error)
 		}
 	}
 
-	rentType := ru.r.FindRentTypeByName(rent.PriceType)
+	rentTypeId := ru.r.FindRentTypeByName(rent.PriceType)
+	if rentTypeId == 0 {
+		return entities.Rent{}, fmt.Errorf("invalid price type")
+	}
 
-	rentModel := ru.r.CreateRent(dto.RentEntitieToModel(rent, rentType))
+	rentM := dto.RentEntitieToModel(rent, rentTypeId)
+	fmt.Printf("%+v\n", rentM)
+
+	rentModel := ru.r.CreateRent(dto.RentEntitieToModel(rent, rentTypeId))
+	ru.r.SaveTransport(transport)
 	rentEntite := dto.RentModelToEntitie(rentModel, rent.PriceType)
 
 	return rentEntite, nil
@@ -273,7 +289,7 @@ func (ru RentUsecase) AdminEndRent(id int, lat, long float64) (entities.Rent, er
 
 	t := time.Now()
 	rentModel.TimeEnd = &t
-	rentType := ru.r.FindRentTypeById(rentModel.PriceTypeId)
+	rentType := ru.r.FindRentTypeById(rentModel.RentTypeId)
 	switch rentType {
 	case "Minutes":
 		rentModel.FinalPrice = ru.calculateRentPrice(rentModel.TimeStart.Unix(),
@@ -302,14 +318,16 @@ func (ru RentUsecase) AdminUpdateRent(rent entities.Rent) (entities.Rent, error)
 	if rentModel.Id == 0 {
 		return entities.Rent{}, fmt.Errorf("rent is not exist")
 	}
-	rentType := ru.r.FindRentTypeByName(rent.PriceType)
-
+	rentTypeId := ru.r.FindRentTypeByName(rent.PriceType)
+	if rentTypeId == 0 {
+		return entities.Rent{}, fmt.Errorf("price type is not exist")
+	}
 	rentModel.TransportId = rent.TransportId
 	rentModel.UserId = rent.UserId
 	rentModel.TimeStart = rent.TimeStart
 	rentModel.TimeEnd = rent.TimeEnd
 	rentModel.PriceOfUnit = rent.PriceOfUnit
-	rentModel.PriceTypeId = rentType
+	rentModel.RentTypeId = rentTypeId
 
 	if rentModel.TimeEnd != nil {
 		switch rent.PriceType {

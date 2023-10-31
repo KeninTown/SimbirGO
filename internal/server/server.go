@@ -102,6 +102,8 @@ func (s *Server) Run(ctx context.Context, uc authHandler.AuthUsecase, pu payment
 	rentsAdminRoutes.GET("/Rent/:id", rh.AdminGetRent)
 	rentsAdminRoutes.POST("/Rent", rh.AdminCreateRent)
 	rentsAdminRoutes.POST("/Rent/End/:id", rh.AdminEndRent)
+	rentsAdminRoutes.GET("/UserHistory/:id", rh.AdminGetUserHistory)
+	rentsAdminRoutes.GET("/TransportHistory/:id", rh.AdminGetTransportHistory)
 	rentsAdminRoutes.PUT("/Rent/:id", rh.AdminUpdateRent)
 	rentsAdminRoutes.DELETE("/Rent/:id", rh.AdminDeleteRent)
 

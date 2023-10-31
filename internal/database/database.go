@@ -92,7 +92,7 @@ func (db Database) SaveUser(user models.User) {
 
 func (db Database) GetUsers(start uint, count int) []models.User {
 	var users []models.User
-	db.db.Limit(int(count)).Find(&users, "id>=?", start)
+	db.db.Limit(int(count)).Order("id").Find(&users, "id>=?", start)
 	return users
 }
 
@@ -159,7 +159,7 @@ func (db Database) FindAvalibleTransports(lat, long, radius float64, typeId uint
 
 	rows, err := db.db.Raw(query).Rows()
 	if err != nil {
-		fmt.Println("err: ", err.Error())
+		log.Printf("err : %s", err.Error())
 		return []models.Transport{}
 	}
 	defer rows.Close()
@@ -202,7 +202,6 @@ func (db Database) FindAvalibleTransports(lat, long, radius float64, typeId uint
 			DayPrice:    dayPrice,
 		})
 	}
-	fmt.Println(transports)
 	return transports
 }
 
@@ -238,13 +237,13 @@ func (db Database) DeleteRent(id int) {
 }
 
 func (db Database) FindRentTypeById(id uint) string {
-	var rentType models.TransportType
+	var rentType models.RentType
 	db.db.Find(&rentType, "id=?", id)
 	return rentType.Type
 }
 
 func (db Database) FindRentTypeByName(typeName string) uint {
-	var rentType models.TransportType
+	var rentType models.RentType
 	db.db.Find(&rentType, "type=?", typeName)
 	return rentType.Id
 }

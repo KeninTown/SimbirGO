@@ -1,7 +1,6 @@
 package transportHandler
 
 import (
-	"fmt"
 	"math"
 	"net/http"
 	"simbirGo/internal/entities"
@@ -38,7 +37,7 @@ func New(tu TransportUsecase) TransportHandler {
 // @Summary Получение информации о транспотре
 // @Tags TransportController
 // @Description Просмотр информации о транспорте с id = {id}
-// @Produce  json
+// @Produce json
 // @Param id path uint true "Transport id"
 // @Success 200 {object} transportHandler.UserGetTransport.transportData
 // @Failure 400 {object} httpUtil.ResponseError
@@ -47,12 +46,12 @@ func (th TransportHandler) UserGetTransport(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
-		httpUtil.NewResponseError(ctx, http.StatusBadRequest, err)
+		httpUtil.NewResponseError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 	transport, err := th.tu.GetTransport(uint(id))
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
@@ -85,10 +84,10 @@ func (th TransportHandler) UserGetTransport(ctx *gin.Context) {
 
 // @Summary Создаение транспорта
 // @Tags TransportController
-// @Description Создает транспорт у текущего авторизованного пользователя
+// @Description Создание транспорта у текущего авторизованного пользователя
 // @Security ApiKeyAuth
 // @Accept json
-// @Produce  json
+// @Produce json
 // @Param request body transportHandler.UserCreateTransport.transportData true "Transport data"
 // @Success 201 {object} transportHandler.UserCreateTransport.responseData
 // @Failure 400 {object} httpUtil.ResponseError
@@ -110,24 +109,24 @@ func (th TransportHandler) UserCreateTransport(ctx *gin.Context) {
 
 	var tData transportData
 	if err := ctx.BindJSON(&tData); err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
 	if tData.DayPrice < 0 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of dayPrice")
 		return
 	}
 	if tData.MinutePrice < 0 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of dayPrice")
 		return
 	}
 	if math.Abs(tData.Longitude) > 180 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of longitude"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of longitude")
 		return
 	}
 	if math.Abs(tData.Latitude) > 90 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of latitude"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of latitude")
 		return
 	}
 
@@ -148,7 +147,7 @@ func (th TransportHandler) UserCreateTransport(ctx *gin.Context) {
 
 	transport, err := th.tu.CreateTransport(transport)
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
@@ -166,7 +165,7 @@ func (th TransportHandler) UserCreateTransport(ctx *gin.Context) {
 		DayPrice      float64 `json:"dayPrice"`
 	}
 
-	ctx.JSON(200, responseData{
+	ctx.JSON(201, responseData{
 		Id:            transport.Id,
 		TransportType: transport.TransportType,
 		CanBeRented:   transport.CanBeRented,
@@ -209,31 +208,31 @@ func (th TransportHandler) UserUpdateTransport(ctx *gin.Context) {
 
 	var tData transportData
 	if err := ctx.BindJSON(&tData); err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
 	if tData.DayPrice < 0 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of dayPrice")
 		return
 	}
 	if tData.MinutePrice < 0 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of dayPrice")
 		return
 	}
 	if math.Abs(tData.Longitude) > 180 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of longitude"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of longitude")
 		return
 	}
 	if math.Abs(tData.Latitude) > 90 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of latitude"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of latitude")
 		return
 	}
 
 	transportIdStr := ctx.Param("id")
 	transportId, err := strconv.Atoi(transportIdStr)
 	if err != nil || transportId < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of id param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of id param")
 		return
 	}
 	userId := ctx.GetUint("id")
@@ -253,7 +252,7 @@ func (th TransportHandler) UserUpdateTransport(ctx *gin.Context) {
 	}
 	transport, err = th.tu.UpdateUserTransport(transport)
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
@@ -287,7 +286,7 @@ func (th TransportHandler) UserUpdateTransport(ctx *gin.Context) {
 
 // @Summary Удаление транспорта
 // @Tags TransportController
-// @Description Удаление транспорта с id = {id} если данные транспорт принадлежит текущему авторизованному пользователю
+// @Description Удаление транспорта с id = {id}. Удалить данные о транспорте может только владелец транспорта.
 // @Security ApiKeyAuth
 // @Param id path uint true "Transport id"
 // @Success 200
@@ -298,13 +297,13 @@ func (th TransportHandler) UserDeleteTransport(ctx *gin.Context) {
 	transportIdStr := ctx.Param("id")
 	transportId, err := strconv.Atoi(transportIdStr)
 	if err != nil || transportId < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of id param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of id param")
 		return
 	}
 	userId := ctx.GetUint("id")
 	err = th.tu.DeleteUserTransport(userId, uint(transportId))
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	ctx.Status(200)
@@ -313,13 +312,13 @@ func (th TransportHandler) UserDeleteTransport(ctx *gin.Context) {
 // admin handlers
 
 // @Summary Информация о транспортных средствах
-// @Tags TransportControllerAdmin
-// @Description Получение count транспортных средств с id >= start с типом транспорта transportType
+// @Tags AdminTransportController
+// @Description Получение count транспортных средств с id >= start и с типом транспорта transportType
 // @Security ApiKeyAuth
 // @Produce  json
 // @Param start query uint true "start"
 // @Param count query uint true "count"
-// @Param transportType query string true "transportType"
+// @Param transportType query string true "transportType" Enums(Car, Bike, Scooter)
 // @Success 200 {array} entities.Transport
 // @Failure 400 {object} httpUtil.ResponseError
 // @Failure 401 {object} httpUtil.ResponseError
@@ -331,19 +330,19 @@ func (th TransportHandler) AdminGetTransports(ctx *gin.Context) {
 	transportType := ctx.Query("transportType")
 	start, err := strconv.Atoi(startStr)
 	if err != nil || start < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of start query param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of start query param")
 		return
 	}
 
 	count, err := strconv.Atoi(countStr)
 	if err != nil || count < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of count query param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of count query param")
 		return
 	}
 
 	transports, err := th.tu.GetTransports(start, count, transportType)
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
@@ -351,7 +350,7 @@ func (th TransportHandler) AdminGetTransports(ctx *gin.Context) {
 }
 
 // @Summary Информация о транспортном средстве
-// @Tags TransportControllerAdmin
+// @Tags AdminTransportController
 // @Description Получение информации о транспортном средстве с id = {id}
 // @Security ApiKeyAuth
 // @Produce json
@@ -365,12 +364,12 @@ func (th TransportHandler) AdminGetTransport(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil || id < 0 {
-		httpUtil.NewResponseError(ctx, http.StatusBadRequest, err)
+		httpUtil.NewResponseError(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 	transport, err := th.tu.GetTransport(uint(id))
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
@@ -378,8 +377,8 @@ func (th TransportHandler) AdminGetTransport(ctx *gin.Context) {
 }
 
 // @Summary Создание транспортного средства
-// @Tags TransportControllerAdmin
-// @Description Создание транспортного средства указывая пользователя с id = ownerId
+// @Tags AdminTransportController
+// @Description Создание транспортного средства. При создании указывается id владельца транспортного средства - ownerId
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
@@ -398,32 +397,32 @@ func (th TransportHandler) AdminCreateTransport(ctx *gin.Context) {
 		Color         string  `json:"color" binding:"required"`
 		Identifier    string  `json:"identifier" binding:"required"`
 		Description   string  `json:"description"`
-		Latitude      float64 `json:"latitude" binding:"required"`
-		Longitude     float64 `json:"longitude" binding:"required"`
+		Latitude      float64 `json:"latitude"`
+		Longitude     float64 `json:"longitude"`
 		MinutePrice   float64 `json:"minutePrice"`
 		DayPrice      float64 `json:"dayPrice"`
 	}
 
 	var tData transportData
 	if err := ctx.BindJSON(&tData); err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
 	if tData.DayPrice < 0 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of dayPrice")
 		return
 	}
 	if tData.MinutePrice < 0 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of dayPrice")
 		return
 	}
 	if math.Abs(tData.Longitude) > 180 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of longitude"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of longitude")
 		return
 	}
 	if math.Abs(tData.Latitude) > 90 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of latitude"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of latitude")
 		return
 	}
 
@@ -443,7 +442,7 @@ func (th TransportHandler) AdminCreateTransport(ctx *gin.Context) {
 
 	transport, err := th.tu.AdminCreateTransport(transport)
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
@@ -451,8 +450,8 @@ func (th TransportHandler) AdminCreateTransport(ctx *gin.Context) {
 }
 
 // @Summary Обновление транспортного средства
-// @Tags TransportControllerAdmin
-// @Description Обновление транспортного средства с id = {id}
+// @Tags AdminTransportController
+// @Description Обновление информации о транспортном средстве с id = {id}
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
@@ -472,39 +471,39 @@ func (th TransportHandler) AdminUpdateTransport(ctx *gin.Context) {
 		Color         string  `json:"color" binding:"required"`
 		Identifier    string  `json:"identifier" binding:"required"`
 		Description   string  `json:"description"`
-		Latitude      float64 `json:"latitude" binding:"required"`
-		Longitude     float64 `json:"longitude" binding:"required"`
+		Latitude      float64 `json:"latitude"`
+		Longitude     float64 `json:"longitude"`
 		MinutePrice   float64 `json:"minutePrice"`
 		DayPrice      float64 `json:"dayPrice"`
 	}
 
 	var tData transportData
 	if err := ctx.BindJSON(&tData); err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 
 	if tData.DayPrice < 0 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of dayPrice")
 		return
 	}
 	if tData.MinutePrice < 0 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of dayPrice"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of dayPrice")
 		return
 	}
 	if math.Abs(tData.Longitude) > 180 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of longitude"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of longitude")
 		return
 	}
 	if math.Abs(tData.Latitude) > 90 {
-		httpUtil.NewResponseError(ctx, 400, fmt.Errorf("invalid value of latitude"))
+		httpUtil.NewResponseError(ctx, 400, "invalid value of latitude")
 		return
 	}
 
 	transportIdStr := ctx.Param("id")
 	transportId, err := strconv.Atoi(transportIdStr)
 	if err != nil || transportId < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of id param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of id param")
 		return
 	}
 
@@ -525,15 +524,15 @@ func (th TransportHandler) AdminUpdateTransport(ctx *gin.Context) {
 
 	transport, err = th.tu.AdminUpdateTransport(transport)
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 	ctx.JSON(200, transport)
 }
 
 // @Summary Удаление транспортного средства
-// @Tags TransportControllerAdmin
-// @Description Удаление транспортного средства с id = {id}
+// @Tags AdminTransportController
+// @Description Удаление информации о транспортном средстве с id = {id}
 // @Security ApiKeyAuth
 // @Param id path uint true "Transport id"
 // @Success 200
@@ -545,13 +544,13 @@ func (th TransportHandler) AdminDeleteTransport(ctx *gin.Context) {
 	transportIdStr := ctx.Param("id")
 	transportId, err := strconv.Atoi(transportIdStr)
 	if err != nil || transportId < 0 {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": "invalid value of id param"})
+		httpUtil.NewResponseError(ctx, 400, "invalid value of id param")
 		return
 	}
 
 	err = th.tu.AdminDeleteTransport(uint(transportId))
 	if err != nil {
-		httpUtil.NewResponseError(ctx, 400, err)
+		httpUtil.NewResponseError(ctx, 400, err.Error())
 		return
 	}
 

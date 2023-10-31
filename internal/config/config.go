@@ -13,7 +13,7 @@ type Config struct {
 	SSLMode  string `mapstructure:"sslmode"`
 }
 
-func Init(path string) (*Config, error) {
+func Init() *Config {
 	var cfg Config
 
 	var (
@@ -40,5 +40,5 @@ func Init(path string) (*Config, error) {
 	cfg.Port = port
 	cfg.SSLMode = sslmode
 	cfg.Host = host
-	return &cfg, nil
+	return &cfg
 }

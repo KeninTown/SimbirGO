@@ -34,11 +34,7 @@ import (
 // @externalDocs.url          https://swagger.io/resources/open-api/
 
 func main() {
-	cfgPath := "./config/config.yml"
-	cfg, err := config.Init(cfgPath)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	cfg := config.Init()
 
 	db, err := database.Connect(cfg)
 	if err != nil {

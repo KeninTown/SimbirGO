@@ -13,7 +13,7 @@ type Rent struct {
 	TimeStart   time.Time  `gorm:"not null; type: timestamptz"`
 	TimeEnd     *time.Time `gorm:"default:null"`
 	PriceOfUnit float64    `gorm:"not null"`
-	PriceTypeId uint       `gorm:"not null"`
-	RentType    RentType   `gorm:"foreignKey:PriceTypeId"`
-	FinalPrice  float64    `gorm:"default:null"`
+	RentTypeId  uint
+	RentType    RentType `gorm:"foreignKey:RentTypeId"`
+	FinalPrice  float64  `gorm:"default:null"`
 }

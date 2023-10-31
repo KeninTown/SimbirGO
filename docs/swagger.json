@@ -52,7 +52,7 @@
         },
         "/api/Account/SignIn": {
             "post": {
-                "description": "Вход в аккаунт и установление в cookie jwt токена авторизации",
+                "description": "Вход в аккаунт пользователя с использованием имени пользователя - username и паролем - password и получение jwt",
                 "consumes": [
                     "application/json"
                 ],
@@ -97,7 +97,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Удаление jwt токена из cookie access_token",
+                "description": "Внесение текущего используемого токена доступа в черный список токенов",
                 "tags": [
                     "AccountController"
                 ],
@@ -123,7 +123,7 @@
         },
         "/api/Account/SignUp": {
             "post": {
-                "description": "Регистрация и установление jwt токена в cookie access_token",
+                "description": "Регистрация пользовате и получение jwt",
                 "consumes": [
                     "application/json"
                 ],
@@ -168,7 +168,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Проверка входящих данных и обновление данных аккаунта",
+                "description": "Обновление данных аккаунта username и password.\nПри смене одного из данных параметров требуется указать текущее значение другого параметра.",
                 "consumes": [
                     "application/json"
                 ],
@@ -219,12 +219,12 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Получение данных count пользователей начиная с id = start",
+                "description": "Возращает информацию о count аккаунтах пользователей начиная с id = start",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "AccountControllerAdmin"
+                    "AdminAccountController"
                 ],
                 "summary": "Получение данных пользователей",
                 "parameters": [
@@ -287,7 +287,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AccountControllerAdmin"
+                    "AdminAccountController"
                 ],
                 "summary": "Создание нового пользователя",
                 "parameters": [
@@ -336,14 +336,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Получение пользователя с id = {id}",
+                "description": "Возвращает информацию о пользователе с id = {id}",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "AccountControllerAdmin"
+                    "AdminAccountController"
                 ],
-                "summary": "Получение пользователя",
+                "summary": "Получение информации о пользователе",
                 "parameters": [
                     {
                         "type": "integer",
@@ -394,7 +394,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "AccountControllerAdmin"
+                    "AdminAccountController"
                 ],
                 "summary": "Обновление данных пользователя",
                 "parameters": [
@@ -448,11 +448,11 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Обновление данных пользователя с id={id}",
+                "description": "Удаление данных пользователя с id={id}",
                 "tags": [
-                    "AccountControllerAdmin"
+                    "AdminAccountController"
                 ],
-                "summary": "Обновление данных пользователя",
+                "summary": "Удаление пользователя",
                 "parameters": [
                     {
                         "type": "integer",
@@ -464,10 +464,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.User"
-                        }
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -505,7 +502,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "RentControllerAdmin"
+                    "AdminRentController"
                 ],
                 "summary": "Создание новой аренды",
                 "parameters": [
@@ -554,15 +551,29 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Завершение аренды транспорта с id = {rentId}.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше,\nчем сумма на счете пользователя, то в завершить аренду нельзя.",
+                "description": "Завершение аренды с id = {rentId}.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше, чем сумма на счете пользователя, то в завершить аренду нельзя.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "RentControllerAdmin"
+                    "AdminRentController"
                 ],
                 "summary": "Завершение аренды",
                 "parameters": [
+                    {
+                        "type": "number",
+                        "description": "lat",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "long",
+                        "name": "long",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "Rent id",
@@ -600,13 +611,63 @@
             }
         },
         "/api/Admin/Rent/{rentId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Получение информации об аренде с id = {rentId}",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AdminRentController"
+                ],
+                "summary": "Информации об аренде",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Rent id",
+                        "name": "rentId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.Rent"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtil.ResponseError"
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Обновление аренды с id = {rentId}\nЕсли в обновлении аренды указывается дата ее окончания, то аренда считается завершенной.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше,\nчем сумма на счете пользователя, то в обновить аренду нельзя.",
+                "description": "Обновление информации об аренде с id = {rentId}\nЕсли в обновлении аренды указывается дата ее окончания, то аренда считается завершенной.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше, чем сумма на счете пользователя, то обновить аренду нельзя.",
                 "consumes": [
                     "application/json"
                 ],
@@ -614,7 +675,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "RentControllerAdmin"
+                    "AdminRentController"
                 ],
                 "summary": "Обновление аренды",
                 "parameters": [
@@ -673,7 +734,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "RentControllerAdmin"
+                    "AdminRentController"
                 ],
                 "summary": "Удаление аренды",
                 "parameters": [
@@ -710,58 +771,6 @@
                 }
             }
         },
-        "/api/Admin/Rent/{rentid}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Получение аренды с id = {rentid}",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RentControllerAdmin"
-                ],
-                "summary": "Получение аренды",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Rent id",
-                        "name": "rentid",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.Rent"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httpUtil.ResponseError"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/httpUtil.ResponseError"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/httpUtil.ResponseError"
-                        }
-                    }
-                }
-            }
-        },
         "/api/Admin/Transport": {
             "get": {
                 "security": [
@@ -769,12 +778,12 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Получение count транспортных средств с id \u003e= start с типом транспорта transportType",
+                "description": "Получение count транспортных средств с id \u003e= start и с типом транспорта transportType",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "TransportControllerAdmin"
+                    "AdminTransportController"
                 ],
                 "summary": "Информация о транспортных средствах",
                 "parameters": [
@@ -793,6 +802,11 @@
                         "required": true
                     },
                     {
+                        "enum": [
+                            "Car",
+                            "Bike",
+                            "Scooter"
+                        ],
                         "type": "string",
                         "description": "transportType",
                         "name": "transportType",
@@ -836,7 +850,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Создание транспортного средства указывая пользователя с id = ownerId",
+                "description": "Создание транспортного средства. При создании указывается id владельца транспортного средства - ownerId",
                 "consumes": [
                     "application/json"
                 ],
@@ -844,7 +858,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TransportControllerAdmin"
+                    "AdminTransportController"
                 ],
                 "summary": "Создание транспортного средства",
                 "parameters": [
@@ -898,7 +912,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TransportControllerAdmin"
+                    "AdminTransportController"
                 ],
                 "summary": "Информация о транспортном средстве",
                 "parameters": [
@@ -943,7 +957,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Обновление транспортного средства с id = {id}",
+                "description": "Обновление информации о транспортном средстве с id = {id}",
                 "consumes": [
                     "application/json"
                 ],
@@ -951,7 +965,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TransportControllerAdmin"
+                    "AdminTransportController"
                 ],
                 "summary": "Обновление транспортного средства",
                 "parameters": [
@@ -1005,9 +1019,9 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Удаление транспортного средства с id = {id}",
+                "description": "Удаление информации о транспортном средстве с id = {id}",
                 "tags": [
-                    "TransportControllerAdmin"
+                    "AdminTransportController"
                 ],
                 "summary": "Удаление транспортного средства",
                 "parameters": [
@@ -1051,14 +1065,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Получение истории всех аренд пользователем с id = {transportId}",
+                "description": "Получение информации обо всех арендах транспорта с id = {transportId}",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "RentControllerAdmin"
+                    "AdminRentController"
                 ],
-                "summary": "Получение аренды",
+                "summary": "История аренды транспорта",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1099,26 +1113,26 @@
                 }
             }
         },
-        "/api/Admin/UserHistory/{userid}": {
+        "/api/Admin/UserHistory/{userId}": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Получение истории всех аренд пользователем с id = {userid}",
+                "description": "Получение информации обо всех арендах пользователем с id = {userId}",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "RentControllerAdmin"
+                    "AdminRentController"
                 ],
-                "summary": "Получение аренды",
+                "summary": "История аренды пользователя",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "User id",
-                        "name": "userid",
+                        "name": "userId",
                         "in": "path",
                         "required": true
                     }
@@ -1161,7 +1175,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Добавляет на баланс пользователся с id = {id} 250 000. Администраторы могут изменять баланс любому пользователю, обычные пользователи только себе",
+                "description": "Пополняет баланс пользователся с id = {id} на 250 000.\nАдминистраторы могут пополнять баланс любому пользователю, обычные пользователи только себе.",
                 "tags": [
                     "PaymentController"
                 ],
@@ -1207,7 +1221,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Окончание аренды транспорта с id = {transportid}.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше,\nчем сумма на счете пользователя, то в завершить аренду нельзя.",
+                "description": "Окончание аренды транспорта с id = {transportid}.\nПроисходит рассчет итоговой суммы аренды и если она оказывается больше, чем сумма на счете пользователя, то в завершить аренду нельзя.",
                 "produces": [
                     "application/json"
                 ],
@@ -1267,14 +1281,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Получение истории всех аренд пользователя",
+                "description": "Получение данных всех аренд текущего авторизованного пользователя",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "RentController"
                 ],
-                "summary": "Получение истории аредны пользователя",
+                "summary": "Истории аренды пользователя",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1314,7 +1328,7 @@
                 "tags": [
                     "RentController"
                 ],
-                "summary": "Новая аренда транспорта",
+                "summary": "Создание новой аренды транспорта",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1324,6 +1338,10 @@
                         "required": true
                     },
                     {
+                        "enum": [
+                            "Minutes",
+                            "Days"
+                        ],
                         "type": "string",
                         "description": "Rent type: [Minutes, Days]",
                         "name": "rentType",
@@ -1355,37 +1373,43 @@
         },
         "/api/Rent/Transport": {
             "get": {
-                "description": "Получение транспорта доступного для аренды по параметрам его расположения и типу транспорта",
+                "description": "Получение информации о транспорте, доступного для аренды по месту его расположения и типу.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "RentController"
                 ],
-                "summary": "Транспорт для аренды",
+                "summary": "Доступный транспорт для аренды",
                 "parameters": [
                     {
                         "type": "number",
-                        "description": "lat",
+                        "description": "географическая широта",
                         "name": "lat",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
-                        "description": "radius",
+                        "description": "радиус поиска",
                         "name": "radius",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
-                        "description": "long",
+                        "description": "географическая долгота",
                         "name": "long",
                         "in": "query",
                         "required": true
                     },
                     {
+                        "enum": [
+                            "All",
+                            "Car",
+                            "Bike",
+                            "Scooter"
+                        ],
                         "type": "string",
                         "description": "transportType",
                         "name": "transportType",
@@ -1419,14 +1443,14 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Получение истории всех аренд транспорта с id = {transportId}.\nДанные может получить только владелец транспорта.",
+                "description": "Получение данных обо всех арендах транспорта с id = {transportId}.\nДанные может получить только владелец транспорта.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "RentController"
                 ],
-                "summary": "Получение истории аредны транспорта",
+                "summary": "Истории аренды транспорта",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1514,7 +1538,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Создает транспорт у текущего авторизованного пользователя",
+                "description": "Создание транспорта у текущего авторизованного пользователя",
                 "consumes": [
                     "application/json"
                 ],
@@ -1654,7 +1678,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Удаление транспорта с id = {id} если данные транспорт принадлежит текущему авторизованному пользователю",
+                "description": "Удаление транспорта с id = {id}. Удалить данные о транспорте может только владелец транспорта.",
                 "tags": [
                     "TransportController"
                 ],
@@ -1956,8 +1980,6 @@
             "required": [
                 "color",
                 "identifier",
-                "latitude",
-                "longitude",
                 "model",
                 "ownerId",
                 "transportType"
@@ -2003,8 +2025,6 @@
             "required": [
                 "color",
                 "identifier",
-                "latitude",
-                "longitude",
                 "model",
                 "ownerId",
                 "transportType"

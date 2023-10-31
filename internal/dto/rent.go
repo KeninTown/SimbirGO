@@ -13,7 +13,7 @@ func RentEntitieToModel(rent entities.Rent, rentType uint) models.Rent {
 		TimeStart:   rent.TimeStart,
 		TimeEnd:     rent.TimeEnd,
 		PriceOfUnit: rent.PriceOfUnit,
-		PriceTypeId: rentType,
+		RentTypeId: rentType,
 		FinalPrice:  rent.FinalPrice,
 	}
 }
