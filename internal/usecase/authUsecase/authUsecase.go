@@ -8,6 +8,8 @@ import (
 	"simbirGo/internal/tokens"
 )
 
+//go:generate mockgen -source=authUsecase.go -destination=mock/mock.go
+
 type AuthRepository interface {
 	FindUserByUsername(username string) models.User
 	FindUserById(id uint) models.User

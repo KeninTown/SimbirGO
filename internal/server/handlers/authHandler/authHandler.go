@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//go:generate mockgen -source=authHandler.go -destination=mock/mock.go
 type AuthUsecase interface {
 	//user's cases
 	MyAccount(id uint) (entities.User, error)
